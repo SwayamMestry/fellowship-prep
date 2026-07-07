@@ -42,3 +42,15 @@ Finished the ENTIRE 'Value' class today '__neg__', '__sub__', '__pow__', '__rpow
 **Notes:**
 - '__truediv__'/'__rtruediv__': noted these also work as a one-liner ('self*other^-1') since mul/pow are already defined, but wrote the full explicit version to actually understand the derivation
 - On 'o.item()': "apparently modern pytorch does not need .data like andrej did"
+
+## July 6
+Finished the whole micrograd video. Trained the MLP to convergence on the toy dataset final predictions matched targets almost exactly (e.g. ~0.998 vs 1.0). Tested the learning rate hands-on check: 0.01 and 0.1 barely differed since tanh's bounded gradients make this tiny network unusually robust. At lr=1.0 on a freshly initialized network, the loss got stuck oscillating around 8.0 for ~13 iterations (overshooting the minimum each step) before by chance landing close enough to escape into normal smooth convergence. Real overshoot behavior, just not the instant-blowup I expected going in.
+Micrograd is done full Value engine (every op derived and debugged myself), Neuron/Layer/MLP, working training loop. Next: nanoGPT.
+
+**Doubts I had today, sorted out:**
+- 'sum()' threw a TypeError. turned out sum()'s hidden default 'start=0' is a plain int, so 'Value' needed a missing '__radd__' (same pattern as rmul/rpow/rtruediv/rsub, just for '+')
+- Confirmed 'params += p' and 'params.extend(p)' are functionally identical for lists (list's '__iadd__' mutates in place), but 'params = params + p' is genuinely different (creates a new list)
+- Got the full breakdown of how the nested list comprehension '[p for neuron in self.neurons for p in neuron.parameters()]' maps to my original explicit loop
+- Confirmed 'p.data -= 0.01 * p.grad' and 'p.data += -0.01 * p.grad' are mathematically identical, pure style difference
+- Learning rate 0.1 had no visible effect at first traced to tanh's bounded gradient (max derivative of 1, shrinking fast away from 0), making this tiny network unusually resistant to instability
+- Rebuilding my own MLP from memory, found two real bugs myself: 'self.b' wasn't wrapped in 'Value(...)' (broke '.tanh()'), and 'MLP.__init__' looped 'range(len(size))' instead of 'range(len(nouts))'
