@@ -54,3 +54,16 @@ Micrograd is done full Value engine (every op derived and debugged myself), Neur
 - Confirmed 'p.data -= 0.01 * p.grad' and 'p.data += -0.01 * p.grad' are mathematically identical, pure style difference
 - Learning rate 0.1 had no visible effect at first traced to tanh's bounded gradient (max derivative of 1, shrinking fast away from 0), making this tiny network unusually resistant to instability
 - Rebuilding my own MLP from memory, found two real bugs myself: 'self.b' wasn't wrapped in 'Value(...)' (broke '.tanh()'), and 'MLP.__init__' looped 'range(len(size))' instead of 'range(len(nouts))'
+
+## July 7
+Started nanoGPT. Built the full data pipeline (tokenizer, encode/decode, train/val split, get_batch) and the BigramLM class embedding table, forward() with cross_entropy loss, generate() with the sampling loop. Got the first loss reading on the untrained model (4.8786).
+Tested argmax vs multinomial for generation, correctly predicted it'd get stuck in a repeating loop before running it, then traced the "identical output every run" result back to the actual cause: the seed only controls the embedding table's random init, since argmax and my fixed starting idx introduce zero randomness of their own.
+Stopped right before training the bigram model self-attention is next.
+
+**Doubts I had today, sorted out:**
+- Why store the dataset as a tensor instead of a plain list. speed, GPU compatibility, and needing 'torch.long' specifically since embedding lookups require integer indices, not floats
+- Why CUDA and GPUs actually are. thousands of parallel cores vs. a CPU's mostly-sequential execution
+- Why feeding the whole text into the transformer at once is expensive. attention cost scales with block_size^2, confirmed by hand (doubling block_size is 4x cost)
+- Full breakdown of get_batch's 'ix'/'x'/'y' lines, especially what '(batch_size,)' means as a shape tuple, and correctly worked out '(4,)' vs '(4,1)' vs why '(,4)' isn't valid syntax
+- 'super().__init__()' and subclassing 'nn.Module' worried I couldn't build this kind of logic myself, but understood the inheritance in it
+- Full 'generate()' walkthrough using my actual xb values, including why it only looks at 'logits[:,-1,:]' (bigram = 1-character memory) and why block_size=8 exists anyway (scaffolding for attention, not needed yet)
