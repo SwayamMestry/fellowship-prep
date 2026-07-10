@@ -67,3 +67,11 @@ Stopped right before training the bigram model self-attention is next.
 - Full breakdown of get_batch's 'ix'/'x'/'y' lines, especially what '(batch_size,)' means as a shape tuple, and correctly worked out '(4,)' vs '(4,1)' vs why '(,4)' isn't valid syntax
 - 'super().__init__()' and subclassing 'nn.Module' worried I couldn't build this kind of logic myself, but understood the inheritance in it
 - Full 'generate()' walkthrough using my actual xb values, including why it only looks at 'logits[:,-1,:]' (bigram = 1-character memory) and why block_size=8 exists anyway (scaffolding for attention, not needed yet)
+
+## July 9
+Trained the bigram model using the AdamW optimizer and a proper training loop, added estimate_loss() to track train/val loss averaged over many batches instead of a single noisy one. Fixed a real bug in decode() it was wrapping the output in an extra list, so print() showed literal $'\n'$ instead of real line breaks.
+Slower day overall, didn't make it past the script section into version 1 of self-attention. Picking up there next time.
+**Doubts I had today, sorted out:**
+- Why estimate_loss averages over 200 batches instead of just checking one. reducing variance/noise in the loss estimate, since one random batch could get lucky/unlucky by chance
+- What `@torch.no_grad()` actually does and why it's used as a decorator worked out that it's shorthand for wrapping the whole function body in 'with torch.no_grad():', and that a decorator must take a function in and return a function out
+- Tested my own understanding by writing a decorator from scratch (`@sub(a,b)` on 'add') correctly identified why my first version wouldn't actually work (sub didn't take a function as input or return one), then fixed it and correctly traced through the corrected version by hand
