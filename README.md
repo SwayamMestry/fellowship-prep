@@ -75,3 +75,16 @@ Slower day overall, didn't make it past the script section into version 1 of sel
 - Why estimate_loss averages over 200 batches instead of just checking one. reducing variance/noise in the loss estimate, since one random batch could get lucky/unlucky by chance
 - What `@torch.no_grad()` actually does and why it's used as a decorator worked out that it's shorthand for wrapping the whole function body in 'with torch.no_grad():', and that a decorator must take a function in and return a function out
 - Tested my own understanding by writing a decorator from scratch (`@sub(a,b)` on 'add') correctly identified why my first version wouldn't actually work (sub didn't take a function as input or return one), then fixed it and correctly traced through the corrected version by hand
+
+## July 10
+Version 1 of self-attention (averaging past context with for loops), version 2 (the matrix multiply trick replacing the double for-loop), version 3 (adding softmax with -inf masking so future positions get exactly zero weight instead of leaking a small nonzero probability). Understood why 0 doesn't work for masking but -inf does. traced through why the last row can look "correct" by coincidence even when the masking logic is actually broken everywhere.
+Karpathy created a new v2.py restructuring BigramLM. embedding table now goes vocab_size to n_embed (32) instead of directly to vocab_size, with a new lm_head (nn.Linear) projecting back up to vocab_size, plus positional embeddings added. Mapped this directly onto my own Neuron/Layer code from micrograd. confirmed nn.Linear has no activation function built in at all, and identified that positional embeddings are currently inert scaffolding, since nothing yet actually uses position-specific information.
+Stopped right before "the crux of the video" actual self-attention (version 4) is next.
+
+**Doubts I had today, sorted out:**
+- Randomly encountered bag-of-words vectorization in xbow's naming.
+- Why softmax with 0s instead of -inf doesn't correctly mask future positions, and why the very last row can look right anyway (uniform inputs, not because the masking is actually correct there)
+- B,T,C shapes and the mean_{i<=t} notation, connected the math notation directly to the nested for-loop mechanically
+- Why tok_emb now goes to n_embed instead of vocab_size directly, and what lm_head (nn.Linear) does. mapped it onto my own Neuron/Layer dot-product logic
+- Confirmed nn.Linear has NO activation function built in. has to be added as a separate step, same as my own Neuron's two-line structure (weighted sum, then .tanh())
+- Positional embeddings. confirmed they're currently doing nothing meaningful without attention yet, just inert scaffolding for now
