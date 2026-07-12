@@ -88,3 +88,16 @@ Stopped right before "the crux of the video" actual self-attention (version 4) i
 - Why tok_emb now goes to n_embed instead of vocab_size directly, and what lm_head (nn.Linear) does. mapped it onto my own Neuron/Layer dot-product logic
 - Confirmed nn.Linear has NO activation function built in. has to be added as a separate step, same as my own Neuron's two-line structure (weighted sum, then .tanh())
 - Positional embeddings. confirmed they're currently doing nothing meaningful without attention yet, just inert scaffolding for now
+
+## July 11
+Version 4: the actual self-attention mechanism. Built Q/K/V from scratch (with hints), understood why bias=False for all three (dot-product comparison doesn't benefit from a fixed offset), why scaling by sqrt(head_size) specifically. worked through the coin-flip variance/std-dev reasoning until it actually made sense.
+Encapsulated everything into a Head(nn.Module) class, learned register_buffer (fixed, non-learnable tensor that still travels with the model for device/save-load, unlike a plain attribute or a learnable parameter). Inserted a single self-attention head into BigramLM between the embeddings and lm_head. Added block_size cropping (i_cond = i[:,-block_size:]) in generate() — needed now that attention looks at the whole sequence, not just the last character like bigram did.
+Asked (and parked) a deeper question about what it even means for q/k/v to "know" anything before training. settled that meaning emerges from gradient descent, not design, and the actual "seeing" of learned patterns is Week 2's TransformerLens job, not something to chase now.
+Stopped right before multi-headed self-attention.
+
+**Doubts I had today, sorted out:**
+- Why q/k/v are meaningless as random numbers before training, and how meaning actually emerges. traced back to the same mechanism as the bigram embedding table becoming meaningful only through training
+- What register_buffer does and why tril needs it instead of being a plain attribute
+- What self.tril[:T,:T] slicing does. sized for the max block_size, sliced down to the actual current sequence length
+- Why i_cond = i[:,-block_size:] is needed in generate() now, when it wasn't for bigram. attention needs all positions, and the model was only trained on block_size-length chunks anyway
+- Why bias=False for key/query/value. the comparison-based role doesn't benefit from a fixed offset the way lm_head's does

@@ -4,9 +4,9 @@ from torch.nn import functional as F
 
 batch_size = 32
 block_size = 8
-max_iters = 3000
+max_iters = 5000
 eval_interval = 300
-lr = 0.01
+lr = 0.001
 eval_iters = 200
 n_embed = 32
 
@@ -49,12 +49,45 @@ def estimate_loss():
   model.train()
   return out
 
+class Head(nn.Module):
+  
+  def __init__(self,head_size):
+    super().__init__()
+    self.key = nn.Linear(n_embed,head_size, bias = False) # key nn taking 32 inputs outputting 16 number keys. (4,8,32) to (4,8,16)
+    self.query = nn.Linear(n_embed,head_size, bias = False) # query nn taking 32 inputs outputting 16 number queries. (4,8,32) to (4,8,16)
+    self.value = nn.Linear(n_embed,head_size, bias = False) # value nn taking 32 inputs outputting 16 number values. (4,8,32) to (4,8,16)
+    self.register_buffer('tril',torch.tril(torch.ones(block_size,block_size))) # lower triangular matrix of ones. 
+    '''
+    register_buffer is PyTorch's way of saying: "this tensor belongs to the model and should travel with it (device, save/load)
+    but it's not a learnable parameter, don't compute gradients for it, don't let the optimizer touch it."
+    '''
+
+  def forward(self,x):
+    B,T,C = x.shape
+    q = self.query(x) # query asks "what this current token is looking for"
+    k = self.key(x) # key asks "what imformation is this current token providing"
+    v = self.value(x) # value at last asks "what information should this current token relay when being attended to"
+
+    w = q @ k.transpose(-1,-2) * C**-0.5 # transpose(-1,-2) swaps last 2 dimensions so (4,8,16) becomes (4,16,8) which is what we matrix multiply with (4,8,16) to get (4,8,8) which we want (query of each token interacting with every other token's key in the sequence)
+    '''
+    sqrt specifically since we need to scale down using std dev. imagine 16 coin tosses +1 for heads -1 for tails.
+    realistically a score of +/- 16 is extremely rare (think of normal distribution curve)
+    usually +4 or -6 somehting like that. similarly instead of divinding by variance we divide by std dev
+    which is sqrt of variance. variance here: since we are adding 16 terms together, variance increases 16x
+    std dev increases 4x so dividing by std dev gives terms roughly scaled to original terms.
+    '''
+    w = w.masked_fill(self.tril[:T,:T] == 0,float('-inf')) # fills matrix w with float('-inf') wherever the mask tril==0 is true (so upper triangle excluding diagonal) think of it like the future tokens cannot communicate with the past
+    w = F.softmax(w,dim=-1) #softmax converts raw numbers into probabilities by row
+    out = w @ v
+    return out
+
 class BigramLM(nn.Module):
 
   def __init__(self):
     super().__init__() # essentially to inherit the __init__() of the superclass (nn.Module)
     self.token_embedding_table = nn.Embedding(vocab_size,n_embed) # embedding table with 65 rows each with 32 values random numbers instead of 65
     self.positional_embedding_table = nn.Embedding(block_size,n_embed)
+    self.sa_head = Head(n_embed)
     self.lm_head = nn.Linear(n_embed,vocab_size) # neural network layer with 32 inputs per layer and 65 such neurons leading to 65 outputs like before. no activation.
 
   def forward(self, i, targets=None):
@@ -62,6 +95,7 @@ class BigramLM(nn.Module):
     tok_emb = self.token_embedding_table(i) # (Batch, Time, Channel) takes a row of 32 numbers for each i
     pos_emb = self.positional_embedding_table(torch.arange(T)) #(T,C)
     x = tok_emb + pos_emb #(B,T,C)
+    x = self.sa_head(x) #applying one self-attention head 
     logits = self.lm_head(x) # (B,T,vocab_size) feeds the 32 numbers as input to a linear NN layer with 65 neurons. each neuron has 32 weights, 1 for each input and 1 bias. total 65 outputs 1 per neuron.
 
     if targets == None:
@@ -75,7 +109,8 @@ class BigramLM(nn.Module):
 
   def generate(self,i,max_new_tokens):
     for _ in range(max_new_tokens):
-      logits, loss = self(i) #runs forward() on each i in the (4,8) xb
+      i_cond = i[:,-block_size:]
+      logits, loss = self(i_cond) #runs forward() on each i in the (4,8) xb
       logits = logits[:,-1,:] #takes only the last character of each of the 4 rows so shape is now (4,65)
       probs = F.softmax(logits,dim=-1) #converts logits to probabilities
       i_next = torch.multinomial(probs, num_samples = 1) #randomly picks one number (from the 65 available) weighted by the probabilities
