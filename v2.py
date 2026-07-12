@@ -81,13 +81,58 @@ class Head(nn.Module):
     out = w @ v
     return out
 
+class MultiHeadAttention(nn.Module):
+  
+  def __init__(self, num_heads, head_size):
+    super().__init__()
+    self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)]) # in place of a regular list. essentially tells pytorch that this is a model part and parameters should be tracked. similar to register_buffer but for lists.
+    self.proj = nn.Linear(n_embed,n_embed)
+
+  def forward(self,x):
+    out = torch.cat([h(x) for h in self.heads], dim = -1) #concatenates all the outputs of heads along the last dimension
+    out = self.proj(out) 
+    return out
+  
+class FeedForward(nn.Module):
+  
+  def __init__(self, n_embed):
+    super().__init__()
+    self.net = nn.Sequential(
+      nn.Linear(n_embed, 4*n_embed),
+      nn.ReLU(),
+      nn.Linear(4*n_embed,n_embed), # projection layer
+    )
+    
+  def forward(self,x):
+    return self.net(x)
+
+class Block(nn.Module):
+  
+  def __init__(self, n_embed, num_heads):
+    super().__init__()
+    head_size = n_embed//num_heads # divides 32 by number of heads so when they are concatenated they become back to 32 regardless of number of heads
+    self.sa = MultiHeadAttention(num_heads, head_size)
+    self.ffwd = FeedForward(n_embed)
+    self.ln1 = nn.LayerNorm(n_embed)
+    self.ln2 = nn.LayerNorm(n_embed)
+
+  def forward(self, x):
+    x = x + self.sa(self.ln1(x)) # added a residual learning layer that passes gradient directly to input (add function passes gradients directly) since the model is too deep and suffers from vanishing gradients.
+    x = x + self.ffwd(self.ln2(x))
+    return x
+
 class BigramLM(nn.Module):
 
   def __init__(self):
     super().__init__() # essentially to inherit the __init__() of the superclass (nn.Module)
     self.token_embedding_table = nn.Embedding(vocab_size,n_embed) # embedding table with 65 rows each with 32 values random numbers instead of 65
     self.positional_embedding_table = nn.Embedding(block_size,n_embed)
-    self.sa_head = Head(n_embed)
+    self.blocks = nn.Sequential(
+      Block(n_embed,4),
+      Block(n_embed,4),
+      Block(n_embed,4),
+      nn.LayerNorm(n_embed)
+    )
     self.lm_head = nn.Linear(n_embed,vocab_size) # neural network layer with 32 inputs per layer and 65 such neurons leading to 65 outputs like before. no activation.
 
   def forward(self, i, targets=None):
@@ -95,7 +140,7 @@ class BigramLM(nn.Module):
     tok_emb = self.token_embedding_table(i) # (Batch, Time, Channel) takes a row of 32 numbers for each i
     pos_emb = self.positional_embedding_table(torch.arange(T)) #(T,C)
     x = tok_emb + pos_emb #(B,T,C)
-    x = self.sa_head(x) #applying one self-attention head 
+    x = self.blocks(x)
     logits = self.lm_head(x) # (B,T,vocab_size) feeds the 32 numbers as input to a linear NN layer with 65 neurons. each neuron has 32 weights, 1 for each input and 1 bias. total 65 outputs 1 per neuron.
 
     if targets == None:

@@ -101,3 +101,15 @@ Stopped right before multi-headed self-attention.
 - What self.tril[:T,:T] slicing does. sized for the max block_size, sliced down to the actual current sequence length
 - Why i_cond = i[:,-block_size:] is needed in generate() now, when it wasn't for bigram. attention needs all positions, and the model was only trained on block_size-length chunks anyway
 - Why bias=False for key/query/value. the comparison-based role doesn't benefit from a fixed offset the way lm_head's does
+
+## July 12
+Built multi-head attention (MultiHeadAttention with proj to mix across heads. correctly reasoned through why per-head feedforwards would be redundant with a single combined one, and why proj is genuinely needed since concatenation alone doesn't mix anything). FeedForward with the proper 4x expansion (n_embed to 4*n_embed back to n_embed). Understood residual connections properly. traced why deep networks need them (vanishing gradients through many stacked layers) and why blocks "come online slowly" during training (network initially relies on the x passthrough since f(x) starts near-random).
+Went deep on batch norm vs layer norm: worked through gamma/beta as a learned escape hatch from forced normalization, running_mean/running_var as the fix for meaningless single-example statistics at inference, and momentum as noise-smoothing across batches. using Karpathy's actual BatchNorm1d class from makemore as the reference. Traced through pre-norm vs post-norm precisely. LayerNorm sitting in the residual's main path (post-norm) vs. only in the side-branch feeding into sublayers (pre-norm), and why that matters for keeping the gradient "highway" clean across many stacked blocks.
+Stopped right before scaling up the model.
+
+**Doubts I had today, sorted out:**
+- Why matrix multiplication and dot products aren't different things. a matmul result is just many dot products computed at once, traced through with real small numbers before connecting it to the actual 8×16 shapes in the code
+- Whether per-head feedforwards before concatenation would help (they'd be redundant with a single combined feedforward, which already has access to everything) vs. whether proj is needed (yes, concatenation alone doesn't mix information, proj is the first real mixing step)
+- Full mechanics of batch norm (gamma/beta, running stats, momentum) using Karpathy's actual class, then extended to why layer norm skips the running-stats/train-eval-mode complexity entirely
+- 2D and 3D worked examples of batch norm vs layer norm. which axis gets normalized in each case
+- Why pre-norm (not post-norm) keeps gradients flowing cleanly through residual connections. LayerNorm sits in the side-branch, not the main path
