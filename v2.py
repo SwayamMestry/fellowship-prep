@@ -2,15 +2,20 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-batch_size = 32
-block_size = 8
+batch_size = 64
+block_size = 256
 max_iters = 5000
 eval_interval = 300
-lr = 0.001
+lr = 3e-4
 eval_iters = 200
-n_embed = 32
+n_embed = 384
+n_heads = 6
+n_layers = 6
+dropout = 0.2
 
 torch.manual_seed(1337)
+device = 'mps' if torch.backends.mps.is_available() else 'cpu'
+print(f'Using device: {device}')
 
 dataset = open('input.txt', 'r', encoding='utf-8')
 text = dataset.read()
@@ -33,6 +38,7 @@ def get_batch(split_type):
   ix = torch.randint(len(data)-block_size, (batch_size,))
   x = torch.stack([data[i:i+block_size] for i in ix])
   y = torch.stack([data[i+1:i+block_size+1] for i in ix])
+  x, y = x.to(device), y.to(device)
   return x,y
 
 @torch.no_grad()
@@ -56,6 +62,7 @@ class Head(nn.Module):
     self.key = nn.Linear(n_embed,head_size, bias = False) # key nn taking 32 inputs outputting 16 number keys. (4,8,32) to (4,8,16)
     self.query = nn.Linear(n_embed,head_size, bias = False) # query nn taking 32 inputs outputting 16 number queries. (4,8,32) to (4,8,16)
     self.value = nn.Linear(n_embed,head_size, bias = False) # value nn taking 32 inputs outputting 16 number values. (4,8,32) to (4,8,16)
+    self.dropout = nn.Dropout(dropout)
     self.register_buffer('tril',torch.tril(torch.ones(block_size,block_size))) # lower triangular matrix of ones. 
     '''
     register_buffer is PyTorch's way of saying: "this tensor belongs to the model and should travel with it (device, save/load)
@@ -78,6 +85,7 @@ class Head(nn.Module):
     '''
     w = w.masked_fill(self.tril[:T,:T] == 0,float('-inf')) # fills matrix w with float('-inf') wherever the mask tril==0 is true (so upper triangle excluding diagonal) think of it like the future tokens cannot communicate with the past
     w = F.softmax(w,dim=-1) #softmax converts raw numbers into probabilities by row
+    w = self.dropout(w)
     out = w @ v
     return out
 
@@ -87,10 +95,11 @@ class MultiHeadAttention(nn.Module):
     super().__init__()
     self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)]) # in place of a regular list. essentially tells pytorch that this is a model part and parameters should be tracked. similar to register_buffer but for lists.
     self.proj = nn.Linear(n_embed,n_embed)
+    self.dropout = nn.Dropout(dropout)
 
   def forward(self,x):
     out = torch.cat([h(x) for h in self.heads], dim = -1) #concatenates all the outputs of heads along the last dimension
-    out = self.proj(out) 
+    out = self.dropout(self.proj(out))
     return out
   
 class FeedForward(nn.Module):
@@ -101,6 +110,7 @@ class FeedForward(nn.Module):
       nn.Linear(n_embed, 4*n_embed),
       nn.ReLU(),
       nn.Linear(4*n_embed,n_embed), # projection layer
+      nn.Dropout(dropout),
     )
     
   def forward(self,x):
@@ -127,20 +137,17 @@ class BigramLM(nn.Module):
     super().__init__() # essentially to inherit the __init__() of the superclass (nn.Module)
     self.token_embedding_table = nn.Embedding(vocab_size,n_embed) # embedding table with 65 rows each with 32 values random numbers instead of 65
     self.positional_embedding_table = nn.Embedding(block_size,n_embed)
-    self.blocks = nn.Sequential(
-      Block(n_embed,4),
-      Block(n_embed,4),
-      Block(n_embed,4),
-      nn.LayerNorm(n_embed)
-    )
+    self.blocks = nn.Sequential(*[Block(n_embed,n_heads) for _ in range(n_layers)])
+    self.ln_f = nn.LayerNorm(n_embed)
     self.lm_head = nn.Linear(n_embed,vocab_size) # neural network layer with 32 inputs per layer and 65 such neurons leading to 65 outputs like before. no activation.
 
   def forward(self, i, targets=None):
     B,T = i.shape
     tok_emb = self.token_embedding_table(i) # (Batch, Time, Channel) takes a row of 32 numbers for each i
-    pos_emb = self.positional_embedding_table(torch.arange(T)) #(T,C)
+    pos_emb = self.positional_embedding_table(torch.arange(T,device=device)) #(T,C)
     x = tok_emb + pos_emb #(B,T,C)
     x = self.blocks(x)
+    x = self.ln_f(x)
     logits = self.lm_head(x) # (B,T,vocab_size) feeds the 32 numbers as input to a linear NN layer with 65 neurons. each neuron has 32 weights, 1 for each input and 1 bias. total 65 outputs 1 per neuron.
 
     if targets == None:
@@ -164,6 +171,7 @@ class BigramLM(nn.Module):
     return i
   
 model = BigramLM()
+model = model.to(device)
 optimizer = torch.optim.AdamW(model.parameters(),lr=lr)
 
 for iter in range(max_iters):
@@ -176,5 +184,5 @@ for iter in range(max_iters):
   loss.backward()
   optimizer.step()
 
-context = torch.zeros((1,1),dtype = torch.long)
+context = torch.zeros((1,1),dtype = torch.long, device=device)
 print(decode(model.generate(context,max_new_tokens=500)[0].tolist()))

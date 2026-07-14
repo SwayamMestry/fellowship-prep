@@ -113,3 +113,19 @@ Stopped right before scaling up the model.
 - Full mechanics of batch norm (gamma/beta, running stats, momentum) using Karpathy's actual class, then extended to why layer norm skips the running-stats/train-eval-mode complexity entirely
 - 2D and 3D worked examples of batch norm vs layer norm. which axis gets normalized in each case
 - Why pre-norm (not post-norm) keeps gradients flowing cleanly through residual connections. LayerNorm sits in the side-branch, not the main path
+
+## July 13
+Reviewed multi-head attention/feedforward/block code from yesterday, then moved into dropout (three separate placements. inside each Head after softmax, after MultiHeadAttention's proj, after FeedForward's output. 48 total dropout applications across 6 layers * 8 per block). Scaled the model up to real config (block_size 256, n_embed 384, 6 heads, 6 layers). Set up MPS on Mac, hit a device-mismatch bug, fixed it, then set up CUDA on Colab and compared MPS (~300 steps/10+ min, ran hot) vs CUDA T4 (~300 steps/5 min) killed the slower Mac run once the comparison was clear.
+Finished the entire video: encoder vs decoder notes, full nanoGPT walkthrough, ChatGPT/GPT-3/pretraining vs finetuning/RLHF context, conclusions. Trained the full scaled-up model on Colab T4 ~1hr 15min for 5000 steps, loss 4.28 to 1.09 (train)/1.48 (val). Generated real Shakespeare-structured text. correct character/dialogue formatting, real words, grammatically plausible fragments, not semantically coherent (expected at this scale).
+
+**02_nanogpt.ipynb is DONE. WEEK 1 COMPLETE.**
+
+**Doubts I had today, sorted out:**
+- Whether dropout was one layer applied broadly. corrected three genuinely separate dropout layers, each guarding a different stage (attention weights, combined multi-head output, feedforward output), never touching the residual path itself
+- Caught my own bug. passed the global 'n_heads' instead of the 'num_heads' parameter in 'MultiHeadAttention.__init__
+- Real device debugging: 'torch.arange(T)' defaulted to CPU while the rest of the model was on MPS, causing a runtime error. fixed with explicit device=device
+- Empirically compared MPS vs CUDA vs CPU speed instead of just reading about it. Colab's free T4 clearly won
+- What GELU is and how it differs from ReLU. a smoothed curve instead of a sharp corner at zero
+- The "dying ReLU" problem. neurons stuck in the always-negative zone get exactly zero gradient forever, since ReLU's derivative there is 0
+- Why GELU fixes this. no truly flat, zero-derivative region, so gradient always flows at least a little
+- Leaky ReLU as an alternative fix (small nonzero slope for negative inputs) but it's an arbitrary hyperparameter with mixed real-world results, and still has a sharp kink unlike GELU's smooth curve
