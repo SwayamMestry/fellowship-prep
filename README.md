@@ -129,3 +129,15 @@ Finished the entire video: encoder vs decoder notes, full nanoGPT walkthrough, C
 - The "dying ReLU" problem. neurons stuck in the always-negative zone get exactly zero gradient forever, since ReLU's derivative there is 0
 - Why GELU fixes this. no truly flat, zero-derivative region, so gradient always flows at least a little
 - Leaky ReLU as an alternative fix (small nonzero slope for negative inputs) but it's an arbitrary hyperparameter with mixed real-world results, and still has a sharp kink unlike GELU's smooth curve
+
+## July 15
+Read Attention Is All You Need through section 3.5 (Positional Encoding). Found three differences from Karpathy's implementation:
+(1) the paper uses post-norm (Add & Norm after the sublayer) vs Karpathy's pre-norm. the paired task answer.
+(2) the paper ties the embedding table and lm_head to the same weight matrix (weight tying), Karpathy's version uses two fully separate ones.
+(3) the paper uses fixed sine/cosine positional encoding, Karpathy uses a learned embedding table. both perform similarly.
+Confirmed the Q/K/V diagram (Figure 2) maps exactly onto my own Head.forward() and MultiHeadAttention code, box for box. Connected "output embeddings offset by one position" directly to my own y = x shifted by one in get_batch. built that mechanism before knowing the paper's name for it.
+
+**Doubts I had today, sorted out:**
+- Weight tying: initially thought it meant two separate tensors with the same shape, actually means literally the same underlying tensor used in two directions (one assignment, no copy)
+- Where the "transpose" in weight tying actually happens. not something I write, it's baked into every nn.Linear's forward pass (x @ weight.T), and PyTorch stores Linear weights as (out_features, in_features), which is why the embedding table and lm_head's weight shapes match despite looking reversed
+- Sine/cosine positional encoding at a high level (different-frequency waves per dimension create a unique fingerprint per position) didn't go deep into the trig, noted it's not critical right now.
