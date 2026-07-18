@@ -141,3 +141,41 @@ Confirmed the Q/K/V diagram (Figure 2) maps exactly onto my own Head.forward() a
 - Weight tying: initially thought it meant two separate tensors with the same shape, actually means literally the same underlying tensor used in two directions (one assignment, no copy)
 - Where the "transpose" in weight tying actually happens. not something I write, it's baked into every nn.Linear's forward pass (x @ weight.T), and PyTorch stores Linear weights as (out_features, in_features), which is why the embedding table and lm_head's weight shapes match despite looking reversed
 - Sine/cosine positional encoding at a high level (different-frequency waves per dimension create a unique fingerprint per position) didn't go deep into the trig, noted it's not critical right now.
+
+## July 16
+Continued reading Attention Is All You Need past 3.5, through Section 4 (Why Self-Attention) and Section 5 (Training Data/Batching, Hardware, Optimizer, Regularization). Worked through Table 1 (complexity/sequential-ops/max-path-length for self-attention, recurrent, convolutional, restricted self-attention) until the n<d reasoning for why self-attention beats recurrent layers actually clicked (worked concrete numbers, n=50 d=512, not just the variables). Untangled restricted self-attention's sliding local window from my own block_size causal cutoff, different mechanisms entirely. Worked through BPE/word-piece tokenization and the paper's LR warmup+inverse-sqrt-decay formula, including how it'd actually get implemented in PyTorch.
+Found three more differences from my own build, on top of the three from July 15:
+(4) the paper uses a warmup (4000 steps) + inverse-square-root decay learning rate schedule, I used a flat constant LR for the whole run.
+(5) the paper applies dropout to each sub-layer's output before the residual add plus to the embedding+positional sum, I applied dropout to attention weights (post-softmax), post-projection, and post-feedforward instead.
+(6) the paper trains with label smoothing (e=0.1, soft targets), I used plain hard-target cross_entropy, no smoothing.
+
+**Doubts I had today, sorted out:**
+- Why self-attention (O(n^2 d)) beats recurrent (O(n d^2)) specifically when n < d, worked concrete numbers instead of just the variables
+- Restricted self-attention's sliding window vs my own block_size. sliding window moves with every token and never fully cuts off distant context, block_size is a hard wall, disjoint chunks with zero visibility across the boundary
+- Whether a sliding window could look both directions vs causal-only. paper's original formulation is centered/bidirectional, but that only works for encoder-style models like BERT, not autoregressive ones like what I built
+- What BERT actually does, since I didn't really know. masked language modeling, bidirectional context, produces representations for downstream tasks, doesn't generate text like GPT does at all
+- How BPE builds its vocabulary from raw characters via repeated pairwise merging, same idea as my own encode/decode, just with a merging step on top
+- The LR schedule formula (warmup then inverse-sqrt decay, peaks exactly at step=warmup_steps) and how it'd actually be implemented in PyTorch
+- Section 5.4 actually describes THREE regularization applications under two headers, not two. residual dropout covers two separate placements (sub-layer output, embedding sum) plus label smoothing separately
+
+## July 17
+Finished the rest of the paper. Section 6 (results) through conclusion plus the attention visualization figures. PAPER FULLY READ, end to end.
+Worked through beam search from scratch with a full step-by-step example (vocab of 6 tokens, beam size 2), understanding it as running my own generate() loop on 4 sequences in parallel instead of 1, with a global pool-and-keep-top-k step after every token that has no equivalent in what I built. Also worked through checkpoint averaging and the length penalty formula (a division/normalization, not subtraction). Two more differences found:
+(7) the paper uses beam search (beam=4) with a length penalty at inference, I only ever used greedy (argmax) or multinomial sampling.
+(8) the paper averages the last 5 (base)/20 (big) checkpoints into the final model, I used the single final checkpoint as-is.
+
+Went through Table 3 (Model Variations, full ablation study) row by row: attention head count vs head size tradeoff (fixed total budget, can't maximize both without growing d_model), d_k independent from d_v (only d_q and d_k must match, hard requirement from the dot product), more layers isn't strictly better (N=8 actually scored worse BLEU than base's N=6 despite lower perplexity and more params), confirmed learned positional embeddings score basically identical to sinusoidal.
+Read 6.3 (constituency parsing), a generalization test on a completely different task. Got into the actual mechanics of semi-supervised learning here: WSJ-only is real human-labeled data, the BerkeleyParser/high-confidence corpora are auto-labeled by existing parsers with zero human involvement. Worked through why the semi-supervised run scored higher (~400x more data, imperfect labels average out at scale), and the genuinely interesting result that the trained model matched/beat the very parser that generated its own training labels.
+Finished on the attention visualization figures (long-distance dependency tracking, anaphora resolution, heads specializing in different jobs). Plan: build the same thing myself by saving attention weights out of my own Head.forward() instead of discarding them, then compare against TransformerLens once I get there in Week 2.
+
+**Doubts I had today, sorted out:**
+- Beam search's "keep only the global top-k across all branches" step. worked a full 3-step example by hand to see a sequence that started behind get overtaken by a better continuation
+- Why beam search isn't exponentially expensive despite exploring every next-token option per beam. cost stays a constant multiple of greedy, specifically because of the discard-to-top-k step every round
+- Length penalty formula. log P(Y) divided by a length-based normalization term, not subtraction, alpha is a tunable exponent (0 = no correction, 1 = full linear correction)
+- Table 3 row A. not "n_embed needs to be large enough", d_model is held fixed the whole row, num_heads and head_size are two ways of splitting one fixed budget. confirmed separately via the "big" model that growing d_model does let you support more heads without shrinking head_size
+- Table 3 row B. d_q and d_v don't need to match, only d_q and d_k do, the paper's own d_k=16/d_v=64 ablation proves this directly
+- Table 3 row C. more layers isn't automatically better. N=8 scored worse BLEU than base's N=6 despite lower perplexity and more params
+- Table 3 row E. testing sinusoidal vs the exact learned-embedding-table approach I actually built, nearly identical scores, paper picked sinusoidal only for extrapolation to unseen sequence lengths
+- Semi-supervised vs self-supervised, since I conflated them. semi-supervised here means small human-labeled data plus a much larger machine-auto-labeled corpus, unrelated to GPT's self-supervised next-token training
+- What the BerkeleyParser/high-confidence corpora actually are. an existing separate parser auto-labeling millions of raw unlabeled web sentences, high-confidence requires two independent parsers to agree before keeping a sentence
+- Why a model trained on an imperfect teacher's labels can end up beating that teacher. the teacher's mistakes are inconsistent noise that doesn't reinforce across millions of examples, real patterns do
