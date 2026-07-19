@@ -179,3 +179,23 @@ Finished on the attention visualization figures (long-distance dependency tracki
 - Semi-supervised vs self-supervised, since I conflated them. semi-supervised here means small human-labeled data plus a much larger machine-auto-labeled corpus, unrelated to GPT's self-supervised next-token training
 - What the BerkeleyParser/high-confidence corpora actually are. an existing separate parser auto-labeling millions of raw unlabeled web sentences, high-confidence requires two independent parsers to agree before keeping a sentence
 - Why a model trained on an imperfect teacher's labels can end up beating that teacher. the teacher's mistakes are inconsistent noise that doesn't reinforce across millions of examples, real patterns do
+
+## July 18
+Read The Illustrated Transformer (Jay Alammar) front to back. No new code, but extensive digging into my own build's mechanics, prompted by mapping the blog's diagrams onto Head/MultiHeadAttention/Block. Confirmed the "independent per position" language in the post means no cross-position dependency, not literal looping. self.ffwd(x) is one single vectorized call over the whole (B,T,C) tensor, not called separately per position.
+Worked through why the last position (T-1) has full context of everything before it, tracing directly through my own tril masking mechanism with a concrete 4-word example. Extended into a deeper question: what if there was no masking and every position could see every other? Worked out the leakage problem directly (the model would see the literal answer it's predicting), and why that's exactly why BERT can only do masked-word-fill, not next-token prediction, since it has no causal mask.
+Tested a good instinct that turned out wrong: tried averaging/combining all T positions' logits for generation instead of just the last one. Worked out why this doesn't help: every position is trained on a different shift-by-one target, not the same question with more or less context, and the last position already has full context via causal attention, so earlier positions don't add missing information, they just answer irrelevant questions.
+Full recap of terminology (batch, block_size, B/T/C, head, ffwd, dropout) and the exact order of operations through one Block, plus what lm_head and the train/generate split actually do at the end of the pipeline. Multi-head shapes walked through in detail with real numbers: same input matrix fed to every head (different weight matrices per head), concat happens along the feature axis per position (not across positions), proj is the real mixing step.
+Went deep on cross-entropy/KL divergence with worked numeric examples, both for hard targets (H(p)=0, H(p,q)=KL(p,q) exactly) and with label smoothing applied (H(p) becomes nonzero, H(p,q) and KL diverge by exactly H(p)). confirms and quantifies the paper's claim from a few days ago that label smoothing "hurts perplexity."
+
+**Doubts I had today, sorted out:**
+- Why "independent per position" for FFwd doesn't mean literally looped/called separately, it's one vectorized matmul, nn.Linear applies to the last dim and broadcasts over B and T automatically
+- Why position T-1 has context of everything before it, direct consequence of tril's triangular structure, nothing special about that position except it's at the end
+- Whether removing causal masking would let every position have equal info for free. yes for raw access, but it would leak the actual next-token answer directly into the computation used to predict it, breaking the entire training task
+- Why averaging/combining all positions' logits for generation isn't better than using just the last one, every position has a different training target (shift-by-one), last position already has full context via attention, earlier ones don't add anything useful
+- Found the exact shift-by-one line in get_batch: y = torch.stack([data[i+1:i+block_size+1] for i in ix])
+- Whether batch elements need to be contiguous, yes within a single sequence always, though different sequences in the batch can start anywhere/overlap freely
+- Confirmed wei stays (B,T,T) after softmax, softmax doesn't collapse a dimension, just rescales values within it
+- Positional encoding numbers in the blog's toy example are fixed (sin/cos formula), not random and not trained, unlike my own learned position_embedding_table
+- Cross-entropy vs KL divergence, worked with real numbers for both hard-target and label-smoothed cases to see exactly where and why they diverge
+
+No commits to model code today, pure reading/Q&A session.
