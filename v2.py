@@ -4,7 +4,7 @@ from torch.nn import functional as F
 
 batch_size = 64
 block_size = 256
-max_iters = 5000
+max_iters = 250
 eval_interval = 300
 lr = 3e-4
 eval_iters = 200
@@ -86,6 +86,7 @@ class Head(nn.Module):
     w = w.masked_fill(self.tril[:T,:T] == 0,float('-inf')) # fills matrix w with float('-inf') wherever the mask tril==0 is true (so upper triangle excluding diagonal) think of it like the future tokens cannot communicate with the past
     w = F.softmax(w,dim=-1) #softmax converts raw numbers into probabilities by row
     w = self.dropout(w)
+    self.attn_weights = w.detach()
     out = w @ v
     return out
 
@@ -186,3 +187,14 @@ for iter in range(max_iters):
 
 context = torch.zeros((1,1),dtype = torch.long, device=device)
 print(decode(model.generate(context,max_new_tokens=500)[0].tolist()))
+test_str = "hello world!"
+test_ids = torch.tensor([encode(test_str)], device=device)
+model.eval()
+with torch.no_grad():
+    model(test_ids)
+model.train()
+
+head0 = model.blocks[0].sa.heads[0]
+print(list(test_str))
+for row in head0.attn_weights[0]:
+    print([round(x.item(), 2) for x in row])
