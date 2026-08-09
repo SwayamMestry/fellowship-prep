@@ -1,0 +1,65 @@
+Core views on AI safety: When, why, what, and how
+Anthropic, Mar 8, 2023
+Source: https://www.anthropic.com/news/core-views-on-ai-safety
+
+We founded Anthropic because we believe the impact of AI might be comparable to that of the industrial and scientific revolutions, but we aren't confident it will go well. And we also believe this level of impact could start to arrive soon – perhaps in the coming decade.
+
+This view may sound implausible or grandiose, and there are good reasons to be skeptical of it. For one thing, almost everyone who has said "the thing we're working on might be one of the biggest developments in history" has been wrong, often laughably so. Nevertheless, we believe there is enough evidence to seriously prepare for a world where rapid AI progress leads to transformative AI systems.
+
+At Anthropic our motto has been "show, don't tell", and we've focused on releasing a steady stream of safety-oriented research that we believe has broad value for the AI community. We're writing this now because as more people have become aware of AI progress, it feels timely to express our own views on this topic and to explain our strategy and goals. In short, we believe that AI safety research is urgently important and should be supported by a wide range of public and private actors.
+
+As a high level summary of the main points in this post:
+
+AI will have a very large impact, possibly in the coming decade. Rapid and continuing AI progress is a predictable consequence of the exponential increase in computation used to train AI systems, because research on "scaling laws" demonstrates that more computation leads to general improvements in capabilities. Simple extrapolations suggest AI systems will become far more capable in the next decade, possibly equaling or exceeding human level performance at most intellectual tasks.
+
+We do not know how to train systems to robustly behave well. So far, no one knows how to train very powerful AI systems to be robustly helpful, honest, and harmless. Furthermore, rapid AI progress will be disruptive to society and may trigger competitive races that could lead corporations or nations to deploy untrustworthy AI systems.
+
+We are most optimistic about a multi-faceted, empirically-driven approach to AI safety. We're pursuing a variety of research directions with the goal of building reliably safe systems, and are currently most excited about scaling supervision, mechanistic interpretability, process-oriented learning, and understanding and evaluating how AI systems learn and generalize.
+
+## Our approach: Empiricism in AI safety
+
+We believe it's hard to make rapid progress in science and engineering without close contact with our object of study. Constantly iterating against a source of "ground truth" is usually crucial for scientific progress. In our AI safety research, empirical evidence about AI – though it mostly arises from computational experiments, i.e. AI training and evaluation – is the primary source of ground truth.
+
+## Taking a portfolio approach to AI safety
+
+One particularly important dimension of uncertainty is how difficult it will be to develop advanced AI systems that are broadly safe and pose little risk to humans. We carve this into three scenarios:
+
+1. Optimistic scenarios: There is very little chance of catastrophic risk from advanced AI as a result of safety failures. Safety techniques already developed, such as reinforcement learning from human feedback (RLHF) and Constitutional AI (CAI), are already largely sufficient for alignment.
+
+2. Intermediate scenarios: Catastrophic risks are a possible or even plausible outcome of advanced AI development. Counteracting this requires a substantial scientific and engineering effort, but with enough focused work we can achieve it.
+
+3. Pessimistic scenarios: AI safety is an essentially unsolvable problem – it's simply an empirical fact that we cannot control or dictate values to a system that's broadly more intellectually capable than ourselves – and so we must not develop or deploy very advanced AI systems.
+
+Our goal is essentially to develop: (1) Better techniques for making AI systems safer, and (2) Better ways of identifying how safe or unsafe AI systems are.
+
+## The three types of AI research at Anthropic
+
+- Capabilities: AI research aimed at making AI systems generally better at any sort of task.
+- Alignment capabilities: Research focused on developing new algorithms for training AI systems to be more helpful, honest, and harmless. Examples: debate, scaling automated red-teaming, Constitutional AI, debiasing, and RLHF.
+- Alignment science: Focuses on evaluating and understanding whether AI systems are really aligned, how well alignment capabilities techniques work, and to what extent we can extrapolate the success of these techniques to more capable AI systems. Examples: mechanistic interpretability, evaluating language models with language models, red-teaming, and studying generalization using influence functions.
+
+## Our current safety research
+
+Key research directions:
+
+### Mechanistic interpretability
+The project of trying to reverse engineer neural networks into human understandable algorithms, similar to how one might reverse engineer an unknown and potentially unsafe computer program. Our hope is that this may eventually enable us to do something analogous to a "code review", auditing our models to either identify unsafe aspects or else provide strong guarantees of safety. We've had success extending this approach to small language models, and even discovered a mechanism that seems to drive a significant fraction of in-context learning (induction heads).
+
+### Scalable oversight
+Turning language models into aligned AI systems will require significant amounts of high-quality feedback to steer their behaviors. The problem of scalable oversight: humans may not be able to provide accurate/informed enough feedback to adequately train models to avoid harmful behavior across a wide range of circumstances, or at scale. We believe the only way to provide the necessary supervision will be to have AI systems partially supervise themselves or assist humans in their own supervision.
+
+### Learning processes rather than achieving outcomes
+"Process-oriented learning": the goal is not to achieve the final outcome but to master individual processes that can then be used to achieve that outcome, rather than "outcome-oriented learning" via pure trial and error. Human experts continue to understand the individual steps AI systems follow, because those processes have to be justified to humans, rather than models being rewarded for success achieved in inscrutable or pernicious ways.
+
+### Understanding generalization
+Trying to get a more detailed understanding of large language model (LLM) training procedures and how emergent behaviors (from creativity to self-preservation to deception) arise from pretraining and fine-tuning.
+
+### Testing for dangerous failure modes
+Setting up environments where we deliberately train concerning properties (like situational awareness or strategic planning) into small-scale models that are not capable enough to be dangerous, so that we can isolate and study them safely.
+
+### Societal impacts and evaluations
+Building tools and measurements to evaluate and understand the capabilities, limitations, and potential societal impact of AI systems, including red-teaming for bias and offensive outputs.
+
+## Closing thoughts
+
+We believe that artificial intelligence may have an unprecedented impact on the world, potentially within the next decade. We do not yet have a solid understanding of how to ensure that these powerful systems are robustly aligned with human values so that we can be confident there is minimal risk of catastrophic failures. We want to be clear that we do not believe that the systems available today pose an imminent concern. However, it is prudent to do foundational work now to help reduce risks from advanced AI if and when much more powerful systems are developed.
