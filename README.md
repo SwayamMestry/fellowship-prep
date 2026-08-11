@@ -319,3 +319,20 @@ Four LeetCode problems. Repeated Substring Pattern. A hashmap frequency approach
 - Merge sort, insertion sort, and selection sort are all worse than O(n) for a problem that is really just binary classification, zero versus non zero, not a general ordering problem
 - Python's swap without a temp variable syntax, 'a, b = b, a'
 - 'arr[-len(arr)]' is the same as 'arr[0]', the outer edge of negative indexing
+
+## August 11
+Started mini-agent, Mini project 2's hand-rolled ReAct loop, no LangGraph yet. One system prompt, two tools ('calc' and 'search'), a while loop that calls Claude Haiku, parses the response into Thought/Action/Answer lines, runs whichever tool got named, and feeds the result back in as the next observation.
+
+Real bugs hit in sequence. First attempt checked '"Answer: " in i for i in output' as a bare condition with no 'any()'. that's a generator expression, and a generator object is truthy the instant it exists, whether or not iterating it would ever actually yield a match, so the loop broke after the very first response no matter what the model said. Fixed by wrapping it in 'any()'.
+Second attempt fixed the Answer check but put the 'break' inside the inner 'for i in output:' loop instead of the outer 'while True:' loop. 'break' only exits its nearest enclosing loop, so this just skipped the rest of that response's lines and fell straight through to 'messages.append', the while loop kept going regardless. Fixed by moving the Answer check and its 'break' to sit at the while loop's own level, before the for loop.
+Third bug, if the model ever named a tool that wasn't 'calc' or 'search', 'observation' never got assigned that turn, and the next 'messages.append' line referenced it unconditionally, either reusing a stale value from a previous turn or throwing 'NameError' on the very first turn. Fixed with a 'case _:' wildcard branch in the match statement, sets 'observation' to a not found message for any unrecognized tool name.
+Fourth, the loop terminated correctly but nothing was ever printed, the final Answer text got computed and then discarded when the loop broke. Fixed with a 'print' right before the 'break'.
+
+Real result. Asked "what is 847/37?". Model gave a Thought, an Action calling 'calc(847, 37, "/")', the tool returned approximately 22.891891891891891, that observation got fed back in, and the model's next turn correctly reasoned over it and produced Answer 847 ÷ 37 = 22.89189189189189 (approximately 22.89), loop stopped on its own. First hand-rolled agent working end to end, one tool call, one observation round trip, one correctly terminating loop.
+
+ReAct paper not yet skimmed, search tool not yet exercised, LangGraph rebuild not started. No LeetCode done today yet, below the daily minimum.
+
+**Doubts I had today, sorted out:**
+- A generator expression sitting inside a bare 'if (...)' is not the same thing as 'any(...)'. the generator object itself is truthy the moment it's created, whether or not iterating it would ever actually yield a match, wrapping it in 'any()' is what forces real evaluation of each comparison
+- 'break' only ever exits its nearest enclosing loop, not whichever loop you intended. a 'break' written inside a 'for' loop that's nested inside a 'while' loop only stops the 'for', the 'while' keeps going regardless
+- A 'match' statement's 'case _:' wildcard branch is what guards against an unassigned variable when none of the named cases match, without it the next line down either reuses a stale value from a previous turn or throws 'NameError' outright
