@@ -1,0 +1,52 @@
+{
+  "math/0501518v2": {
+    "title": "Deformation of algebras over the Landweber-Novikov algebra",
+    "authors": [
+      "Donald Yau"
+    ],
+    "summary": "  An algebraic deformation theory of algebras over the Landweber-Novikov algebra is obtained.",
+    "pdf_url": "https://arxiv.org/pdf/math/0501518v2",
+    "published": "2005-01-28"
+  },
+  "1903.08145v2": {
+    "title": "BiHom-Novikov algebras and infinitesimal BiHom-bialgebras",
+    "authors": [
+      "Ling Liu",
+      "Abdenacer Makhlouf",
+      "Claudia Menini",
+      "Florin Panaite"
+    ],
+    "summary": "We introduce and study infinitesimal BiHom-bialgebras, BiHom-Novikov algebras, BiHom-Novikov-Poisson algebras, and find some relations among these concepts. Our main result is to show how to obtain a left BiHom-pre-Lie algebra from an infinitesimal BiHom-bialgebra",
+    "pdf_url": "https://arxiv.org/pdf/1903.08145v2",
+    "published": "2019-03-18"
+  },
+  "1010.0770v4": {
+    "title": "Absence of exponentially localized solitons for the Novikov-Veselov equation at positive energy",
+    "authors": [
+      "Roman Novikov"
+    ],
+    "summary": "In this note we show that the Novikov-Veselov equation at positive energy (an analog of KdV in 2+1 dimensions) has no exponentially localized solitons ( in the two-dimensional sense).",
+    "pdf_url": "https://arxiv.org/pdf/1010.0770v4",
+    "published": "2010-10-05"
+  },
+  "1102.0692v1": {
+    "title": "Absence of exponentially localized solitons for the Novikov--Veselov equation at negative energy",
+    "authors": [
+      "Anna Kazeykina",
+      "Roman Novikov"
+    ],
+    "summary": "We show that Novikov--Veselov equation (an analog of KdV in dimension 2 + 1) does not have exponentially localized solitons at negative energy.",
+    "pdf_url": "https://arxiv.org/pdf/1102.0692v1",
+    "published": "2011-02-03"
+  },
+  "1010.2897v1": {
+    "title": "A large time asymptotics for transparent potentials for the Novikov-Veselov equation at positive energy",
+    "authors": [
+      "Anna Kazeykina",
+      "Roman Novikov"
+    ],
+    "summary": "In the present paper we begin studies on the large time asymptotic behavior for solutions of the Cauchy problem for the Novikov--Veselov equation (an analog of KdV in 2 + 1 dimensions) at positive energy. In addition, we are focused on a family of reflectionless (transparent) potentials parameterized by a function of two variables. In particular, we show that there are no isolated soliton type waves in the large time asymptotics for these solutions in contrast with well-known large time asymptotics for solutions of the KdV equation with reflectionless initial data.",
+    "pdf_url": "https://arxiv.org/pdf/1010.2897v1",
+    "published": "2010-10-14"
+  }
+}
