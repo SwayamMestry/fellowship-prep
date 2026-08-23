@@ -1,0 +1,47 @@
+{
+  "physics/0508180v2": {
+    "title": "Philosophy Enters the Optics Laboratory: Bell's Theorem and its First Experimental Tests (1965-1982)",
+    "authors": [
+      "Olival Freire"
+    ],
+    "summary": "  This paper deals with the ways that the issue of completing quantum mechanics was brought into laboratories and became a topic in mainstream quantum optics. It focuses on the period between 1965, when Bell published what now we call Bell's theorem, and 1982, when Aspect published the results of his experiments. I argue that what was considered good physics after Aspect's experiments was once considered by many a philosophical matter instead of a scientific one, and that the path from philosophy to physics required a change in the physics community's attitude about the status of the foundations of quantum mechanics.",
+    "pdf_url": "https://arxiv.org/pdf/physics/0508180v2",
+    "published": "2005-08-24"
+  },
+  "1112.0222v2": {
+    "title": "Philosophy and problems of the definition of Extraterrestrial Life",
+    "authors": [
+      "Jean Schneider"
+    ],
+    "summary": "When we try to search for extraterrestrial life and intelligence, we have to follow some guidelines. The first step is to clarify what is to be meant by \"Life\" and \"intelligence\", i.e. an attempt to define these words. The word \"definition\" refers to two different situations. First, it means an arbitrary convention. On the other hand it also often designates an attempt to clarify the content of a pre-existing word for which we have some spontaneous preconceptions, whatever their grounds, and to catch an (illusory) \"essence\" of what is defined. It is then made use of pre-existing plain language words which carry an a priori pre-scientific content likely to introduce some confusion in the reader's mind. The complexity of the problem will be analyzed and we will show that some philosophical prejudice is unavoidable. There are two types of philosophy: \"Natural Philosophy\", seeking for some essence of things, and \"Critical (or analytical) Philosophy\", devoted to the analysis of the procedures by which we claim to construct a reality. An extension of Critical Philosophy, Epistemo-Analysis (i.e. the Psycho-Analysis of concepts) is presented and applied to the defintion of Life and to Astrobiology.",
+    "pdf_url": "https://arxiv.org/pdf/1112.0222v2",
+    "published": "2011-12-01"
+  },
+  "2401.16506v2": {
+    "title": "The physicists philosophy of physics",
+    "authors": [
+      "P. J. E. Peebles"
+    ],
+    "summary": "I argue that research in physics operates under an implicit community philosophy, and I offer a definition I think physicists would accept, by and large. I compare this definition to what philosophers, sociologists, and historians of science, with physicists, say we are doing.",
+    "pdf_url": "https://arxiv.org/pdf/2401.16506v2",
+    "published": "2024-01-29"
+  },
+  "2110.12102v1": {
+    "title": "The Quantum Revolution in Philosophy (Book Review)",
+    "authors": [
+      "Eddy Keming Chen"
+    ],
+    "summary": "In this thought-provoking book, Richard Healey proposes a new interpretation of quantum theory inspired by pragmatist philosophy. Healey puts forward the interpretation as an alternative to realist quantum theories on the one hand such as Bohmian mechanics, spontaneous collapse theories, and many-worlds interpretations, which are different proposals for describing what the quantum world is like and what the basic laws of physics are, and non-realist interpretations on the other hand such as quantum Bayesianism, which proposes to understand quantum theory as describing agents' subjective epistemic states. The central idea of Healey's proposal is to understand quantum theory as providing not a description of the physical world but a set of authoritative and objectively correct prescriptions about how agents should act. The book provides a detailed development and defense of that idea, and it contains interesting discussions about a wide range of philosophical issues such as representation, probability, explanation, causation, objectivity, meaning, and fundamentality. Healey's project is at the intersection of physics and philosophy. The book is divided into two parts. Part I of the book discusses the foundational questions in quantum theory from the perspective of the prescriptive interpretation. In Part II, Healey discusses the philosophical implications of the view. Both parts are written in a way that is largely accessible to non-specialists. In this brief book review, I will focus on two questions: (1) How does Healey's idea work? (2) What reasons are there to believe in it?",
+    "pdf_url": "https://arxiv.org/pdf/2110.12102v1",
+    "published": "2021-10-23"
+  },
+  "2506.16015v1": {
+    "title": "Bayesian Epistemology with Weighted Authority: A Formal Architecture for Truth-Promoting Autonomous Scientific Reasoning",
+    "authors": [
+      "Craig S. Wright"
+    ],
+    "summary": "The exponential expansion of scientific literature has surpassed the epistemic processing capabilities of both human experts and current artificial intelligence systems. This paper introduces Bayesian Epistemology with Weighted Authority (BEWA), a formally structured architecture that operationalises belief as a dynamic, probabilistically coherent function over structured scientific claims. Each claim is contextualised, author-attributed, and evaluated through a system of replication scores, citation weighting, and temporal decay. Belief updates are performed via evidence-conditioned Bayesian inference, contradiction processing, and epistemic decay mechanisms. The architecture supports graph-based claim propagation, authorial credibility modelling, cryptographic anchoring, and zero-knowledge audit verification. By formalising scientific reasoning into a computationally verifiable epistemic network, BEWA advances the foundation for machine reasoning systems that promote truth utility, rational belief convergence, and audit-resilient integrity across dynamic scientific domains.",
+    "pdf_url": "https://arxiv.org/pdf/2506.16015v1",
+    "published": "2025-06-19"
+  }
+}

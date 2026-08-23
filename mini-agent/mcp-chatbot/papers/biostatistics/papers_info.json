@@ -1,0 +1,74 @@
+{
+  "2402.01112v1": {
+    "title": "Gerontologic Biostatistics 2.0: Developments over 10+ years in the age of data science",
+    "authors": [
+      "Chixiang Chen",
+      "Michelle Shardell",
+      "Jaime Lynn Speiser",
+      "Karen Bandeen-Roche",
+      "Heather Allore",
+      "Thomas G Travison",
+      "Michael Griswold",
+      "Terrence E. Murphy"
+    ],
+    "summary": "Background: Introduced in 2010, the sub-discipline of gerontologic biostatistics (GBS) was conceptualized to address the specific challenges in analyzing data from research studies involving older adults. However, the evolving technological landscape has catalyzed data science and statistical advancements since the original GBS publication, greatly expanding the scope of gerontologic research. There is a need to describe how these advancements enhance the analysis of multi-modal data and complex phenotypes that are hallmarks of gerontologic research. Methods: This paper introduces GBS 2.0, an updated and expanded set of analytical methods reflective of the practice of gerontologic biostatistics in contemporary and future research. Results: GBS 2.0 topics and relevant software resources include cutting-edge methods in experimental design; analytical techniques that include adaptations of machine learning, quantifying deep phenotypic measurements, high-dimensional -omics analysis; the integration of information from multiple studies, and strategies to foster reproducibility, replicability, and open science. Discussion: The methodological topics presented here seek to update and expand GBS. By facilitating the synthesis of biostatistics and data science in gerontology, we aim to foster the next generation of gerontologic researchers.",
+    "pdf_url": "https://arxiv.org/pdf/2402.01112v1",
+    "published": "2024-02-02"
+  },
+  "2301.11791v2": {
+    "title": "Improving Software Engineering in Biostatistics: Challenges and Opportunities",
+    "authors": [
+      "Daniel Saban\u00e9s Bov\u00e9",
+      "Heidi Seibold",
+      "Anne-Laure Boulesteix",
+      "Juliane Manitz",
+      "Alessandro Gasparini",
+      "Burak K. G\u00fcnhan",
+      "Oliver Boix",
+      "Armin Sch\u00fcler",
+      "Sven Fillinger",
+      "Sven Nahnsen",
+      "Anna E. Jacob",
+      "Thomas Jaki"
+    ],
+    "summary": "Programming is ubiquitous in applied biostatistics; adopting software engineering skills will help biostatisticians do a better job. To explain this, we start by highlighting key challenges for software development and application in biostatistics. Silos between different statistician roles, projects, departments, and organizations lead to the development of duplicate and suboptimal code. Building on top of open-source software requires critical appraisal and risk-based assessment of the used modules. Code that is written needs to be readable to ensure reliable software. The software needs to be easily understandable for the user, as well as developed within testing frameworks to ensure that long term maintenance of the software is feasible. Finally, the reproducibility of research results is hindered by manual analysis workflows and uncontrolled code development. We next describe how the awareness of the importance and application of good software engineering practices and strategies can help address these challenges. The foundation is a better education in basic software engineering skills in schools, universities, and during the work life. Dedicated software engineering teams within academic institutions and companies can be a key factor for the establishment of good software engineering practices and catalyze improvements across research projects. Providing attractive career paths is important for the retainment of talents. Readily available tools can improve the reproducibility of statistical analyses and their use can be exercised in community events. [...]",
+    "pdf_url": "https://arxiv.org/pdf/2301.11791v2",
+    "published": "2023-01-24"
+  },
+  "2209.13358v1": {
+    "title": "Phases of methodological research in biostatistics - building the evidence base for new methods",
+    "authors": [
+      "Georg Heinze",
+      "Anne-Laure Boulesteix",
+      "Michael Kammer",
+      "Tim P. Morris",
+      "Ian R. White"
+    ],
+    "summary": "Although the biostatistical scientific literature publishes new methods at a very high rate, many of these developments are not trustworthy enough to be adopted by the scientific community. We propose a framework to think about how a piece of methodological work contributes to the evidence base for a method. Similarly to the well-known phases of clinical research in drug development, we define four phases of methodological research. These four phases cover (I) providing logical reasoning and proofs, (II) providing empirical evidence, first in a narrow target setting, then (III) in an extended range of settings and for various outcomes, accompanied by appropriate application examples, and (IV) investigations that establish a method as sufficiently well-understood to know when it is preferred over others and when it is not. We provide basic definitions of the four phases but acknowledge that more work is needed to facilitate unambiguous classification of studies into phases. Methodological developments that have undergone all four proposed phases are still rare, but we give two examples with references. Our concept rebalances the emphasis to studies in phase III and IV, i.e., carefully planned methods comparison studies and studies that explore the empirical properties of existing methods in a wider range of problems.",
+    "pdf_url": "https://arxiv.org/pdf/2209.13358v1",
+    "published": "2022-09-27"
+  },
+  "1709.06111v3": {
+    "title": "Bayesian detection of piecewise linear trends in replicated time-series with application to growth data modelling",
+    "authors": [
+      "Panagiotis Papastamoulis",
+      "Takanori Furukawa",
+      "Norman van Rhijn",
+      "Michael Bromley",
+      "Elaine Bignell",
+      "Magnus Rattray"
+    ],
+    "summary": "We consider the situation where a temporal process is composed of contiguous segments with differing slopes and replicated noise-corrupted time series measurements are observed. The unknown mean of the data generating process is modelled as a piecewise linear function of time with an unknown number of change-points. We develop a Bayesian approach to infer the joint posterior distribution of the number and position of change-points as well as the unknown mean parameters. A-priori, the proposed model uses an overfitting number of mean parameters but, conditionally on a set of change-points, only a subset of them influences the likelihood. An exponentially decreasing prior distribution on the number of change-points gives rise to a posterior distribution concentrating on sparse representations of the underlying sequence. A Metropolis-Hastings Markov chain Monte Carlo (MCMC) sampler is constructed for approximating the posterior distribution. Our method is benchmarked using simulated data and is applied to uncover differences in the dynamics of fungal growth from imaging time course data collected from different strains. The source code is available on CRAN.",
+    "pdf_url": "https://arxiv.org/pdf/1709.06111v3",
+    "published": "2017-09-18"
+  },
+  "0912.3330v2": {
+    "title": "Contact intervals, survival analysis of epidemic data, and estimation of R_0",
+    "authors": [
+      "Eben Kenah"
+    ],
+    "summary": "  We argue that the time from the onset of infectiousness to infectious contact, which we call the contact interval, is a better basis for inference in epidemic data than the generation or serial interval. Since contact intervals can be right-censored, survival analysis is the natural approach to estimation. Estimates of the contact interval distribution can be used to estimate R_0 in both mass-action and network-based models.",
+    "pdf_url": "https://arxiv.org/pdf/0912.3330v2",
+    "published": "2009-12-17"
+  }
+}

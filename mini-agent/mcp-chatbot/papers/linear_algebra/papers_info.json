@@ -1,0 +1,49 @@
+{
+  "1003.1544v2": {
+    "title": "Linear Mappings of Free Algebra",
+    "authors": [
+      "Aleks Kleyn"
+    ],
+    "summary": "For arbitrary F-algebra, in which the operation of addition is defined, I explore biring of matrices of mappings. The sum of matrices is determined by the sum in F-algebra, and the product of matrices is determined by the product of mappings. The system of equations, whose matrix is a matrix of mappings, is called a system of additive equations. I considered the methods of solving system of additive equations. As an example, I consider the solution of a system of linear equations over the complex field provided that the equations contain unknown quantities and their conjugates.\n  Linear mappings of algebra over a commutative ring preserve the operation of addition in algebra and the product of elements of the algebra by elements of the ring. The representation of tensor product A\\otimes A in algebra A generates the set of linear transformations of algebra A.\n  The results of this research will be useful for mathematicians and physicists who deal with different algebras.",
+    "pdf_url": "https://arxiv.org/pdf/1003.1544v2",
+    "published": "2010-03-08"
+  },
+  "1811.03128v1": {
+    "title": "Non-linear positive maps between $C^*$-algebras",
+    "authors": [
+      "Ali Dadkhah",
+      "Mox Sal Moslehian"
+    ],
+    "summary": "We present some properties of (not necessarily linear) positive maps between $C^*$-algebras. We first extend the notion of Lieb functions to that of Lieb positive maps between $C^*$-algebras. Then we give some basic properties and fundamental inequalities related to such maps. Next, we study $n$-positive maps ($n\\geq 2$). We show that if for a unital $3$-positive map $\u03a6: \\mathscr{A}\\longrightarrow\\mathscr{B}$ between unital $C^*$-algebras and some $ A\\in \\mathscr{A}$ equality $\u03a6(A^*A)= \u03a6(A)^* \u03a6(A)$ holds, then $\u03a6(XA)=\u03a6(X)\u03a6(A)$ for all $X \\in \\mathscr{A}$. In addition, we prove that for a certain class of unital positive maps $\u03a6: \\mathscr{A}\\longrightarrow\\mathscr{B}$ between unital $C^*$-algebras, the inequality $\u03a6(\u03b1A)\\leq\u03b1\u03a6(A)$ holds for all $ \u03b1\\in [0,1]$ and all positive elements $ A\\in \\mathscr{A}$ if and only if $\u03a6(0)=0$. Furthermore, we show that if for some $\u03b1$ in the unit ball of $\\mathbb{C}$ or in $\\mathbb{R}_+$ with $|\u03b1|\\neq 0,1$, the equality $\u03a6(\u03b1I)=\u03b1I$ holds, then $\u03a6$ is additive on positive elements of $\\mathscr{A}$. Moreover, we present a mild condition for a $6$-positive map, which ensures its linearity.",
+    "pdf_url": "https://arxiv.org/pdf/1811.03128v1",
+    "published": "2018-11-07"
+  },
+  "1610.03868v1": {
+    "title": "Gr\u00fcss type inequalities for positive linear maps on $C^*$-algebras",
+    "authors": [
+      "Ali Dadkhah",
+      "Mohammad Sal Moslehian"
+    ],
+    "summary": "Let $\\mathcal{A}$ and $\\mathcal{B}$ be two unital $C^*$-algebras and let for $C\\in\\mathcal{A},\\ \u0393_C=\\{\u03b3\\in \\mathbb{C} : \\|C-\u03b3I\\|=\\inf_{\u03b1\\in \\mathbb{C}} \\|C-\u03b1I\\|\\}$. We prove that if $\u03a6:\\mathcal{A} \\longrightarrow \\mathcal{B}$ is a unital positive linear map, then \\begin{eqnarray*} \\big|\u03a6(AB)-\u03a6(A)\u03a6(B)\\big| \\leq \\big\\|\u03a6(|A^*-\u03b6I|^2)\\big\\|^\\frac{1}{2} \\big[\u03a6(|B-\u03beI|^2)\\big]^\\frac{1}{2} \\end{eqnarray*} for all $A,B\\in\\mathcal{A}, \u03b6\\in \u0393_A$ and $\u03be\\in\u0393_B.$\\\\ In addition, we show that if $(\\mathcal{A},\u03c4)$ is a noncommutative probability space and $T \\in \\mathcal{A}$ is a density operator, then \\begin{eqnarray*} \\ \\ \\big|\u03c4(TAB)-\u03c4(TA)\u03c4(TB)\\big|\\leq \\|A-\u03b6I\\|_p\\|B-\u03beI\\|_q\\|T\\|_r \\ \\ (p,q\\geq 4, r\\geq 2) \\end{eqnarray*} and \\begin{eqnarray*} \\big|\u03c4(TAB)-\u03c4(TA)\u03c4(TB)\\big|\\leq \\|A-\u03b6I\\|_p\\|B-\u03beI\\|_q\\|T\\| \\ \\ \\ \\ (p,q\\geq 2)\\ \\ \\ \\ \\ \\end{eqnarray*} for every $A,B \\in \\mathcal{A}$ and $\u03b6\\in \u0393_A,\u03be\\in \u0393_B$. Our results generalize the corresponding results for matrices to operators on spaces of arbitrary dimension.",
+    "pdf_url": "https://arxiv.org/pdf/1610.03868v1",
+    "published": "2016-10-12"
+  },
+  "1210.6019v1": {
+    "title": "Using max-algebra linear models in the representation of queueing systems",
+    "authors": [
+      "Nikolai K. Krivulin"
+    ],
+    "summary": "The application of the max-algebra to describe queueing systems by both linear scalar and vector equations is discussed. It is shown that these equations may be handled using ordinary algebraic manipulations. Examples of solving the equations representing the $G/G/1$ queue and queues in tandem are also presented.",
+    "pdf_url": "https://arxiv.org/pdf/1210.6019v1",
+    "published": "2012-10-22"
+  },
+  "math/0406325v1": {
+    "title": "Left-symmetric Algebras From Linear Functions",
+    "authors": [
+      "Chengming Bai"
+    ],
+    "summary": "  In this paper, some left-symmetric algebras are constructed from linear functions. They include a kind of simple left-symmetric algebras and some examples appearing in mathematical physics. Their complete classification is also given, which shows that they can be regarded as generalization of certain 2-dimensional left-symmetric algebras.",
+    "pdf_url": "https://arxiv.org/pdf/math/0406325v1",
+    "published": "2004-06-16"
+  }
+}
