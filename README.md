@@ -598,3 +598,22 @@ Real milestone alongside all that, the Programming Skills study plan is now full
 - Reassigning 'head.next' on every loop iteration only ever keeps the most recent digit attached, a separate tail pointer that itself moves forward each time is what actually keeps the whole chain intact
 - 'or' inside a loop condition that is supposed to require two things staying valid together lets the loop keep running the moment just one of them is still true, 'and' is the one that actually requires both
 - Floyd's cycle detection only works because the fast pointer closes the gap on the slow one over time, if both pointers move at the same speed the distance between them never changes and a real cycle can run forever undetected
+
+## August 30
+
+Six day gap since the last real session, apartment move. One aborted sign in on Aug 29 with zero work done got pulled back out of the log since nothing actually happened that day. Real session picked back up this evening.
+
+Recap first, twenty one questions this time instead of the usual fifteen, expanded past the normal every other session alternation on purpose since a week off is long enough that older material, RAG, the hand built transformer, LangGraph, needed checking too, not just the last session's scope. Fourteen of twenty one came back solid, four partial, two real misses, a genuinely strong result for the length of the gap.
+
+Main real work tonight was closing out the retrieval faithfulness finding from Aug 22 for good. Root cause turned out to be that 'search_papers' was never doing any matching of its own at all, it was fully deferring to arxiv's own relevance sort, which runs on Apache Lucene's plain term frequency scoring, not real topical understanding, and arxiv's thin seismology corpus let deep learning papers that only mentioned 'seismic' once outrank actual seismology work. Fix was a real rerank step added to 'search_papers', sentence transformers to embed the topic and every candidate abstract, faiss to find the closest ones by real semantic distance instead of trusting arxiv's lexical order, and the candidate pool widened proportionally so there was always something worth reranking. Real bugs caught along the way, an empty faiss index from a missing 'index.add' call, a shape mismatch passing a 1D query vector into a search expecting a 2D one, checking paper titles against raw integer positions instead of mapping them back onto the original list, and a padding edge case where asking for more results than the pool actually held would have silently pulled the wrong paper through negative indexing. Verified for real afterward, reran the exact same earthquake topic from the original finding, all five papers that came back this time were genuinely about seismology, zero generic deep learning papers padding the list.
+
+MCP course Lesson 7, prompt and resource features, queued up next but pushed to the next session, too long a lesson to start this late in the night.
+
+Two LeetCode problems tonight instead of the usual three, his own call given the hour. Greatest Common Divisor of Strings, 1071, a full self derived approach starting from nothing but the problem's own title. Maximum Number of Vowels in a Substring of Given Length, 1456, a real multi attempt arc landing on a proper sliding window with a running count instead of rescanning the window from scratch every step.
+
+**Doubts I had today, sorted out**
+- arxiv's own relevance sort runs on Lucene's term frequency scoring, not real semantic understanding, so a paper that only mentions a term once can outrank a paper that is actually about it if the real corpus for that topic is thin
+- a generator can only be walked once, iterating over an already exhausted one a second time returns nothing at all, silently, not an error
+- faiss search results are integer positions into whatever was added to the index, not the original objects, those positions have to be mapped back onto the original list by hand
+- asking a faiss index for more results than it actually holds pads the extras with -1 instead of erroring, and python treats a -1 index as a valid last element instead of failing, so an unguarded request size can silently pull the wrong result
+- a sliding window's real speed advantage comes from touching only the one character leaving and the one entering at each step, rescanning the whole window every step under a different variable name is still the slow version underneath

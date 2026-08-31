@@ -3,6 +3,8 @@ import os
 import json
 from dotenv import load_dotenv
 from fastmcp import FastMCP
+from sentence_transformers import SentenceTransformer
+import faiss
 
 mcp = FastMCP('research') 
 
@@ -13,14 +15,14 @@ PAPER_DIR = 'papers'
 def search_papers(topic:str, max_results:int=5) -> list:
 
     '''Search for papers on arXiv based on the topic and save the results'''
-
+    pool = max(max_results*4,20)
     client = arxiv.Client()
     search = arxiv.Search(
         query = topic,
-        max_results = max_results,
+        max_results = pool,
         sort_by = arxiv.SortCriterion.Relevance
     )
-    papers = client.results(search)
+    papers = list(client.results(search))
 
     path = os.path.join(PAPER_DIR, topic.lower().replace(' ', '_'))
     os.makedirs(path,exist_ok=True)
@@ -33,8 +35,18 @@ def search_papers(topic:str, max_results:int=5) -> list:
     except (FileNotFoundError,json.JSONDecodeError):
         papers_info = {}
     
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+    query = model.encode([topic])
+    abstract = model.encode([paper.summary for paper in papers])
+    index = faiss.IndexFlatL2(abstract.shape[1])
+    index.add(abstract)
+    _,indices = index.search(query,max_results)
+    final = []
+    for i in indices[0]:
+        final.append(papers[i])
+
     paper_ids = []
-    for paper in papers:
+    for paper in final:
         paper_ids.append(paper.get_short_id())
         paper_info = {
             'title' : paper.title,

@@ -1,0 +1,65 @@
+{
+  "2003.07593v1": {
+    "title": "Global Earthquake Prediction Systems",
+    "authors": [
+      "Oleg Elshin",
+      "Andrew A. Tronin"
+    ],
+    "summary": "Terra Seismic can predict most major earthquakes (M6.2 or greater) at least 2 - 5 months before they will strike. Global earthquake prediction is based on determinations of the stressed areas that will start to behave abnormally before major earthquakes. The size of the observed stressed areas roughly corresponds to estimates calculated from Dobrovolskys formula. To identify abnormalities and make predictions, Terra Seismic applies various methodologies, including satellite remote sensing methods and data from ground-based instruments. We currently process terabytes of information daily, and use more than 80 different multiparameter prediction systems. Alerts are issued if the abnormalities are confirmed by at least five different systems. We observed that geophysical patterns of earthquake development and stress accumulation are generally the same for all key seismic regions. Thus, the same earthquake prediction methodologies and systems can be applied successfully worldwide. Our technology has been used to retrospectively test data gathered since 1970 and it successfully detected about 90 percent of all significant quakes over the last 50 years.",
+    "pdf_url": "https://arxiv.org/pdf/2003.07593v1",
+    "published": "2020-03-17"
+  },
+  "1308.1846v1": {
+    "title": "Developing and Testing the Automated Post-Event Earthquake Loss Estimation and Visualisation (APE-ELEV) Technique",
+    "authors": [
+      "Anthony Astoul",
+      "Christopher Filliter",
+      "Eric Mason",
+      "Andrew Rau-Chaplin",
+      "Kunal Shridhar",
+      "Blesson Varghese",
+      "Naman Varshney"
+    ],
+    "summary": "An automated, real-time, multiple sensor data source relying and globally applicable earthquake loss model and visualiser is desirable for post-event earthquake analysis. To achieve this there is a need to support rapid data ingestion, loss estimation and integration of data from multiple data sources and rapid visualisation at multiple geographic levels. In this paper, the design and development of the Automated Post-Event Earthquake Loss Estimation and Visualisation (APE-ELEV) system for real-time estimation and visualisation of insured losses incurred due to earthquakes is presented. A model for estimating ground up and net of facultative losses due to earthquakes in near real-time is implemented. Since post-event data is often available immediately from multiple disparate sources, a geo-browser is employed to facilitate the visualisation and integration of earthquake hazard, exposure and loss data. The feasibility of APE-ELEV is demonstrated using a test case earthquake that occurred in Tohoku, Japan (2011). The APE-ELEV model is further validated for ten global earthquakes using industry loss data.",
+    "pdf_url": "https://arxiv.org/pdf/1308.1846v1",
+    "published": "2013-08-08"
+  },
+  "0710.1205v2": {
+    "title": "Full Scale Dynamic Response of a RC Building under Weak Seismic Motions Using Earthquake Recordings, Ambient Vibrations and Modelling",
+    "authors": [
+      "Clotaire Michel",
+      "Philippe Gu\u00e9guen",
+      "Saber El Arem",
+      "Jacky Mazars",
+      "Panagiotis Kotronis"
+    ],
+    "summary": "  In countries with a moderate seismic hazard, the classical methods developed for strong motion prone countries to estimate the seismic behaviour and subsequent vulnerability of existing buildings are often inadequate and not financially realistic. The main goals of this paper are to show how the modal analysis can contribute to the understanding of the seismic building response and the good relevancy of a modal model based on ambient vibrations for estimating the structural deformation under moderate earthquakes. We describe the application of an enhanced modal analysis technique (Frequency Domain Decomposition) to process ambient vibration recordings taken at the Grenoble City Hall building (France). The frequencies of ambient vibrations are compared with those of weak earthquakes recorded by the French permanent accelerometric network (RAP) that was installed to monitor the building. The frequency variations of the building under moderate earthquakes are shown to be slight (~2%) and therefore ambient vibration frequencies are relevant over the elastic domain of the building. The modal parameters extracted from ambient vibrations are then used to determine the 1D lumped-mass model in order to reproduce the inter-storey drift under weak earthquakes and to fix a 3D numerical model that could be used for strong earthquakes. The correlation coefficients between data and synthetic motion are close to 80% and 90% in horizontal directions, for the 1D and 3D modelling, respectively.",
+    "pdf_url": "https://arxiv.org/pdf/0710.1205v2",
+    "published": "2007-10-05"
+  },
+  "2601.03177v1": {
+    "title": "Modelling and Simulation of the Propagation of P-SV Seismic Waves from Earthquakes: Application to Deep Earthquakes in Acre, Brazil",
+    "authors": [
+      "Pedro Huan Moreira",
+      "Andina Alay Lerma",
+      "Eliandro Rodrigues Cirilo",
+      "Neyva Maria Lopes Romeiro",
+      "Waldemir Lima Dos Santos",
+      "Paulo Laerte Natti"
+    ],
+    "summary": "Brazil is located in the central-eastern portion of the South American Plate, meaning that the country mostly experiences low-intensity seismic activity within its territory. However, some geological faults in this region have generated intense earthquakes. In this context, we intend to describe a recent earthquake of magnitude around 6.5 M_b that occurred at a depth of approximately 600 km in the state of Acre, Brazil. In this work, we modeled the propagation of P-SV seismic waves using a two-dimensional system of partial differential equations (PDEs) in a two-dimensional vertical rectangular domain. The source is modeled by a Gaussian pulse function. The initial quiescence condition and Neumann boundary conditions are used. The PDE system is discretized by the finite difference method (FDM) and solved by the Gauss-Seidel method (GSM). The numerical simulations obtained describe the propagation of attenuated seismic waves in multiple geological layers, simulating intense and deep earthquakes in Acre. We used the propagation of perfect seismic waves to validate the model. The results include images of the simulations and theoretical seismograms simulating the vertical and horizontal displacement in the epicenter region and 200 km east and west of the epicenter.",
+    "pdf_url": "https://arxiv.org/pdf/2601.03177v1",
+    "published": "2026-01-06"
+  },
+  "2303.11662v1": {
+    "title": "Seeing through the CO2 plume: joint inversion-segmentation of the Sleipner 4D Seismic Dataset",
+    "authors": [
+      "Juan Romero",
+      "Nick Luiken",
+      "Matteo Ravasi"
+    ],
+    "summary": "4D seismic inversion is the leading method to quantitatively monitor fluid flow dynamics in the subsurface, with applications ranging from enhanced oil recovery to subsurface CO2 storage. The process of inverting seismic data for reservoir properties is, however, a notoriously ill-posed inverse problem due to the band-limited and noisy nature of seismic data. This comes with additional challenges for 4D applications, given inaccuracies in the repeatability of the time-lapse acquisition surveys. Consequently, adding prior information to the inversion process in the form of properly crafted regularization terms is essential to obtain geologically meaningful subsurface models. Motivated by recent advances in the field of convex optimization, we propose a joint inversion-segmentation algorithm for 4D seismic inversion, which integrates Total-Variation and segmentation priors as a way to counteract the missing frequencies and noise present in 4D seismic data. The proposed inversion framework is applied to a pair of surveys from the open Sleipner 4D Seismic Dataset. Our method presents three main advantages over state-of-the-art least-squares inversion methods: 1. it produces high-resolution baseline and monitor acoustic models, 2. by leveraging similarities between multiple data, it mitigates the non-repeatable noise and better highlights the real time-lapse changes, and 3. it provides a volumetric classification of the acoustic impedance 4D difference model (time-lapse changes) based on user-defined classes. Such advantages may enable more robust stratigraphic and quantitative 4D seismic interpretation and provide more accurate inputs for dynamic reservoir simulations. Alongside our novel inversion method, in this work, we introduce a streamlined data pre-processing sequence for the 4D Sleipner post-stack seismic dataset, which includes time-shift estimation and well-to-seismic tie.",
+    "pdf_url": "https://arxiv.org/pdf/2303.11662v1",
+    "published": "2023-03-21"
+  }
+}
