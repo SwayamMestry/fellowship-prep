@@ -84,5 +84,80 @@ def extract_info(paper_id:str)->str:
                     continue
     return f'Paper {paper_id} does not exist'
 
+@mcp.resource('papers://folders')
+def get_folder_names()->str:
+    '''
+    gives a simple list of all topic folders
+    '''
+    folders = []
+    if os.path.exists(PAPER_DIR):
+        for topic_dir in os.listdir(PAPER_DIR):
+            topic_path = os.path.join(PAPER_DIR,topic_dir)
+            if os.path.isdir(topic_path):
+                file = os.path.join(topic_path,'papers_info.json')
+                if os.path.exists(file):
+                    folders.append(topic_dir)
+    content = 'topics:\n'
+    if folders:
+        for folder in folders:
+            content += f'\n->{folder}'
+            content += f'Use @{folder} to access papers on that topic'
+    else:
+        content = '\nno topics found'
+    return content
+
+@mcp.resource('papers://{topic}')
+def get_topic_papers(topic:str)->str:
+    '''
+    get info on papers on a specific topic
+    args:
+        topic: the topic to get papers on
+    '''
+    topic_path = topic.replace(' ','_').lower()
+    file = os.path.join(PAPER_DIR,topic_path,'papers_info.json')
+    if not os.path.exists(file):
+        return 'no papers found on topic'
+    try:
+        with open(file,'r') as f:
+            data = json.load(f)
+        content = f"# Papers on {topic.replace('_', ' ').title()}\n\n"
+        content += f"Total papers: {len(data)}\n\n"
+            
+        for paper_id, paper_info in data.items():
+            content += f"## {paper_info['title']}\n"
+            content += f"- **Paper ID**: {paper_id}\n"
+            content += f"- **Authors**: {', '.join(paper_info['authors'])}\n"
+            content += f"- **Published**: {paper_info['published']}\n"
+            content += f"- **PDF URL**: [{paper_info['pdf_url']}]({paper_info['pdf_url']})\n\n"
+            content += f"### Summary\n{paper_info['summary'][:500]}...\n\n"
+            content += "---\n\n"
+        return content
+    except json.JSONDecodeError:
+        return 'error reading json data'
+
+@mcp.prompt()
+def generate_search_prompt(topic: str, num_papers: int = 5) -> str:
+    """Generate a prompt for Claude to find and discuss academic papers on a specific topic."""
+    return f"""Search for {num_papers} academic papers about '{topic}' using the search_papers tool. Follow these instructions:
+    1. First, search for papers using search_papers(topic='{topic}', max_results={num_papers})
+    2. For each paper found, extract and organize the following information:
+       - Paper title
+       - Authors
+       - Publication date
+       - Brief summary of the key findings
+       - Main contributions or innovations
+       - Methodologies used
+       - Relevance to the topic '{topic}'
+    
+    3. Provide a comprehensive summary that includes:
+       - Overview of the current state of research in '{topic}'
+       - Common themes and trends across the papers
+       - Key research gaps or areas for future investigation
+       - Most impactful or influential papers in this area
+    
+    4. Organize your findings in a clear, structured format with headings and bullet points for easy readability.
+    
+    Please present both detailed information about each paper and a high-level synthesis of the research landscape in {topic}."""
+
 if __name__ == '__main__':
     mcp.run(transport='stdio')

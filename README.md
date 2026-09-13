@@ -617,3 +617,55 @@ Two LeetCode problems tonight instead of the usual three, his own call given the
 - faiss search results are integer positions into whatever was added to the index, not the original objects, those positions have to be mapped back onto the original list by hand
 - asking a faiss index for more results than it actually holds pads the extras with -1 instead of erroring, and python treats a -1 index as a valid last element instead of failing, so an unguarded request size can silently pull the wrong result
 - a sliding window's real speed advantage comes from touching only the one character leaving and the one entering at each step, rescanning the whole window every step under a different variable name is still the slow version underneath
+
+## September 4
+
+Real sign out was on record from Aug 30, so recap first, no new technical build happened in the days between, so this session stayed pure recap. Sixteen questions, this session's turn for the full journey pull under the standing alternation rule, spanning RAG, the hand built transformer, LangGraph, MCP, and the Aug 30 retrieval fix and LeetCode work specifically. Ten of sixteen solid on fair questions, four partial, one missed, one question thrown out as a mistake on my end rather than his, a near verbatim repeat of a question already asked two sessions ago, and a second question using a library name he was never actually taught under that name, reduce_messages was the real term used in his own work, not add_messages, so that one was not counted either.
+
+Real corrections given on the partial answers. Why math dot gcd is provably the largest valid tile length, not just the length that happens to work, since any smaller valid divisor would itself have to divide the gcd too. Why checking exact string equality after rebuilding a repeated tile catches ordering that a character frequency count never could, since two strings can share identical character counts while being in a completely different order. Why weighted binary cross entropy with a high pos weight produces systematically overconfident sigmoid outputs, the loss punishes a low confidence true positive far harder than it punishes a false positive, so the model learns to push its raw outputs toward extremes for anything it suspects is positive, which is not the same thing as a real calibrated probability. And the actual mechanical difference between an MCP tool and an MCP resource, a tool gets offered to the model as something it can choose to call, a resource gets fetched directly by the client or the user and is never something the model decides to invoke on its own.
+
+**Doubts I had today, sorted out**
+- the greatest common divisor of two lengths is provably the largest length any valid common divisor string could have, so testing it directly is sufficient, no need to separately check every smaller divisor
+- a character frequency count cannot distinguish two strings that use the exact same characters in a different order, only rebuilding the string and checking real equality catches that
+- pushing a loss function to punish missing the rare class harder than it punishes a false positive trains the model to output more extreme values for anything it suspects is positive, decoupling the raw output from a real calibrated probability
+- an MCP tool is something offered to the model to decide whether to call, an MCP resource is fetched directly by the client or user and is never something the model chooses to invoke on its own
+
+## September 10
+
+Real sign out was on record from September 4, so recap first. September 4 itself had been pure recap with zero new build, so this recap pulled fifteen fresh questions rather than reusing anything, all scoped to the last real material, the August 30 retrieval fix and both leetcode problems. Five solid on the first pass, three partial, seven missed, then two of the partial answers, the ordering question on the gcd concatenation check and the string multiplication complexity question, got upgraded after rereading the literal original text and finding the point was already there.
+
+Real corrections landed on several fronts. A faiss index with nothing semantically close inside it still returns its least bad candidates ranked by whatever relative distance exists, it never refuses to answer, so a retrieval step can look successful while quietly returning nothing useful. The concatenation check in the gcd problem has to run before trusting any gcd length as meaningful, a length can divide both string lengths on paper without the strings actually sharing a real common tile. Squared distance and cosine similarity only rank identically once the underlying vectors are rescaled to length one, an embedding that was never normalized can genuinely disagree between the two, and the search papers code never calls that normalize step. The slowdown in the early vowels attempts came from rescanning every character in the window fresh at each step rather than adjusting by the one character leaving and the one entering.
+
+After the recap, moved into MCP lesson seven, prompt and resource features, deferred twice before. Grounded the real distinction between a tool, a resource, and a prompt template in plain terms before opening the lesson itself.
+
+**Doubts I had today, sorted out**
+- a faiss index that finds nothing genuinely close still returns an ordered list of its least bad candidates, silence or an empty result is not what a bad match looks like here
+- a gcd length dividing both string lengths is not proof of a real shared tile, only rebuilding the candidate and checking exact equality against both strings proves that
+- squared euclidean distance and cosine similarity agree on ranking only when vectors are unit length, unnormalized embeddings can rank differently under the two
+
+## September 11
+
+Signed in, picked up MCP lesson seven directly. Wrote a first resource function independently after reading the course code once, get_folder_names, exposing the list of topic folders under a custom uri. Asked what the at sign in the decorator actually does, the decorator registers a function under a given uri so the server knows to call it when that uri gets requested, it changes nothing about how the function itself runs.
+
+Reviewing the function directly surfaced a real bug, the line meant to add a use at folder hint sat at the same indent as the for loop rather than inside it, so it only ever ran once after the loop finished, using whatever folder name happened to be left over from the last iteration instead of tagging every topic with its own hint. Signed out for the gym before fixing it.
+
+**Doubts I had today, sorted out**
+- a resource decorator only registers a function under a uri for the server to route requests to, the function body itself behaves exactly as it would without the decorator
+- python does not scope a loop variable to the loop itself, a line placed one indent level outside the loop still runs, just once, holding whichever value the variable last had
+
+## September 12
+
+Picked back up the same unfinished resource function, no recap since this was a direct continuation of unfinished work rather than a return to older material after time away. Asked about a second, unrelated at sign, this one sitting inside the returned text itself rather than in the decorator, that one is just plain text, a convention some client interfaces use to let a person mention a specific resource directly in chat, the server assigns it no special meaning at all.
+
+Walked through what a prompt template actually does, a reusable set of named arguments filled with plain values, distinct from a resource, which is passive data waiting to be attached, and distinct from a tool, which the model chooses to call mid conversation. A prompt template can have a resource embedded inside whatever it returns, but that is the template author choosing to include it, not something built into the blanks themselves.
+
+Asked for a full pass through everything, claude dot md, the entire readme, every standing memory file, and the broader profile memory, to confirm current state and behavior before continuing. Everything held up except one stale note in the broader profile memory describing the bmihai project as tabnet with an end date of July, both left over from the original plan before the actual transformer work replaced it, flagged and left open rather than edited without asking.
+
+That same pass caught a second real bug in the same file, get_topic_papers assigns its loaded json to a variable named data, then references a completely different name, papers_data, two lines later and again inside its own loop. That name was never defined anywhere, an immediate name error the moment the function actually runs.
+
+Both bugs in server py are still open going into next time.
+
+**Doubts I had today, sorted out**
+- an at sign inside returned resource text is plain content with no meaning to the server itself, any behavior tied to it lives entirely in whichever client interface chooses to interpret it
+- a prompt template only fills its own named arguments with plain values, pulling a resource into the output is a choice the template author makes, not a mechanism the arguments themselves provide
+- a variable has to be spelled identically everywhere it is used inside a function, a rename that only happened partway through will not surface until python actually reaches the line still holding the old name
