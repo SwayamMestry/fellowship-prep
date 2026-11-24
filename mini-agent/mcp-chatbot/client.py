@@ -6,6 +6,7 @@ import asyncio
 import json
 from contextlib import AsyncExitStack
 from typing import List, TypedDict, Dict
+import mcp.shared.exceptions as mcp_exceptions
 
 _ = load_dotenv()
 
@@ -14,6 +15,16 @@ class ToolDefinition(TypedDict):
     description : str
     input_schema : dict
 
+class ArgDefinition(TypedDict):
+    name : str
+    description : str
+    required : bool
+
+class PromptDefinition(TypedDict):
+    name : str
+    description : str
+    arguments : List[ArgDefinition]
+
 class MCP_Chatbot:
     def __init__(self):
         self.session : List[ClientSession] = []
@@ -21,6 +32,8 @@ class MCP_Chatbot:
         self.tools_to_session: Dict[str,ClientSession] = {}
         self.anthropic = anthropic.Anthropic()
         self.available_tools : List[ToolDefinition] = []
+        self.prompts_to_session: Dict[str,ClientSession] = {}
+        self.available_prompts : List[PromptDefinition] = []
 
     async def connect_to_server(self,server_name:str,server_config:dict):
         '''connect to a single MCP server'''
@@ -38,7 +51,6 @@ class MCP_Chatbot:
             self.session.append(session)
             response = await session.list_tools()
             tools = response.tools
-            print('connected with following tools:',[tool.name for tool in tools])
 
             for tool in tools:
                 self.tools_to_session[tool.name] = session
@@ -47,6 +59,30 @@ class MCP_Chatbot:
                     'description':tool.description,
                     'input_schema':tool.inputSchema
                 })
+
+            try:
+                response = await session.list_prompts()
+            except mcp_exceptions.McpError as e:
+                print(f"{server_name} does not offer prompts")
+            else:
+                prompts = response.prompts
+                for prompt in prompts:
+                    arguments = []
+                    self.prompts_to_session[prompt.name] = session
+                    if prompt.arguments is not None:
+                        for argument in prompt.arguments:
+                            arguments.append({
+                                'name':argument.name,
+                                'description':argument.description,
+                                'required':argument.required
+                            })
+                    self.available_prompts.append({
+                        'name':prompt.name,
+                        'description':prompt.description,
+                        'arguments':arguments
+                    })
+                print('connected with following prompts:',[prompt.name for prompt in prompts])
+            print('connected with following tools:',[tool.name for tool in tools])
         except Exception as e:
             print(f'Failed to connect to server {server_name}: {e}')
 

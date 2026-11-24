@@ -684,3 +684,37 @@ Also went through the whole resume ahead of a career fair the next day, a real c
 - squared euclidean distance and cosine similarity only agree on ranking once vectors are rescaled to unit length first
 - an unsupported skill on a resume is a real liability the moment someone asks about it live, not just an ats formatting question
 - a narrow title claim like ai safety research role only lands with the small slice of employers actually hiring for it, a broader capability based opener works across far more of a room
+
+## November 20
+
+Six and a half weeks since the last session on October 5, which itself never got a sign out, closed it out at around four to five in the afternoon from his own estimate. Checked the files before recapping, client py had not been touched since August 23 and server py not since September 15, so nothing new was built in the gap. The career fair he prepped for turned out to be a redirect to apply online, he did not go.
+
+Full journey recap, fifteen questions, run past the normal alternation turn because the gap was so long. Two solid, five partial, five missed, three not counted, two because LeetCode is out of scope now and one because a numbering slip meant he never saw it. Most of the misses were recall of his own code, the shapes coming out of the faiss search, and what connect_to_server actually fills in for a server with two tools. Open book on one question, which is fine, but it says the code needs a proper reread before building anything new on top of it.
+
+Real corrections given. The faiss search takes a batch of query vectors and returns one row per query, so a single query comes back as one by five, which is why the loop reads the first row. The micrograd backward for a product is a dot grad plus equals b dot data times out dot grad, the out grad factor is the chain rule and it is plus equals because one node can feed several consumers. Attention scores get divided by the square root of the head size because dot product variance grows with head size, large scores push softmax toward one hot and its gradients nearly vanish. Chunk size cuts both ways, too small and no single chunk holds the answer, too large and the embedding blurs several topics together. A stdio server uses its own stdout as the message channel, so a stray print mixes plain text into the stream, log to stderr instead. AUROC only measures ranking, so it cannot see calibration, and recall depends on one chosen threshold. Prompt arguments arrive as text, so a string like False is truthy inside a plain if check, parse and validate them on the server.
+
+Standing change from him, LeetCode is SQL only from now on, no more LeetCode 75 and no more curated pattern problems, and CLAUDE dot md was updated to match. Next step is to reread client py and server py top to bottom, then write the first piece of connect_to_server, the part that also lists prompts and resources.
+
+**Doubts I had today, sorted out**
+- a faiss search over a batch of queries returns one row of results per query, a single query is still a batch of one, which is why the code indexes the first row
+- a product node in micrograd passes back the other operand times the gradient arriving from above, and it adds into the existing gradient instead of replacing it
+- dividing attention scores by the square root of the head size keeps their variance near one, without it softmax saturates and learning through attention stalls
+- a stdio MCP server speaks over its own stdout, so anything else printed there can corrupt the conversation, send logs to stderr
+- a high AUROC says nothing about calibration, a model can rank patients well while its raw probabilities are still badly off
+- arguments typed into a prompt arrive as strings, so a string that spells out false still counts as true in a plain if check
+## November 23
+
+No recap, nothing had been built since the November 20 session and the files were unchanged, so a repeat would only cover the same ground. Went straight into the client side of MCP lesson seven. Read connect_to_server end to end first and got the stdio block clear, an async with only keeps the connection alive inside its own block, so the exit stack holds each one open until cleanup closes them in reverse order.
+
+Then wrote prompt support himself inside connect_to_server, listing each server's prompts, mapping every prompt name to its session, and storing name, description, and arguments alongside the tools. His first attempt had the bodies of the tools loop and the prompts loop swapped, so each one read a variable that did not exist yet or a stale one. Several review rounds followed. The list_prompts call had to move inside its own try, the arguments type had to become a list of dicts, a print before the variables were assigned crashed startup, the arguments list was created outside the loop so it would be shared between prompts, and a continue on prompts with no arguments quietly skipped storing them. Each fix was his own, reviewed after, never handed over.
+
+The exception handling got the most attention. A broad except around the whole prompts block labels any failure as no prompts, hiding real problems like a dead connection. A live run showed filesystem raises McpError when asked for prompts, so the inner except now catches only that and names the server, anything else travels up to the outer handler that reports the real reason. The first live run also failed from the wrong folder, the config file and the paths inside it resolve from wherever the terminal is, not from the script. Run from the project folder, all three servers connected, research and fetch each listed their prompt, filesystem listed tools only.
+
+Next step is resources. The research server has one fixed address and one template with a blank, and the client has two separate calls for those, list_resources and list_resource_templates, so print both first to see which returns which. After that come the at sign fetch and the slash prompt command in the chat loop.
+
+**Doubts I had today, sorted out**
+- a relative path resolves from the folder the terminal was in at launch, not from where the script sits, which also decides what the paths inside the server config point at
+- an except block should only catch errors the code actually knows how to handle, anything else should travel up to a place that can report it with the real reason
+- storing raw library objects inside a dict breaks the type promised for it and cannot be dumped to json, converting once at the door keeps all later code simple
+- a server with no prompts answers the request with an MCP protocol error instead of returning an empty list
+- the objects a server returns for tools are already plain values, the arguments of a prompt are a list of objects, so only the second needs converting
